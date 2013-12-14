@@ -109,7 +109,7 @@ public class TBRCJava extends FitnessFunction {
         Double error = wFP*falsePositiveRate + wFN*falseNegativeRate;
         ind.setFitness(this.FITNESS_KEY, error);
         func = null;
-}
+    }
 
     @Override
     public void evalPop(Population pop) {

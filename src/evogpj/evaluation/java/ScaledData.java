@@ -17,7 +17,12 @@
  */
 package evogpj.evaluation.java;
 
+import evogpj.gp.Individual;
 import evogpj.math.means.ArithmeticMean;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Class which provides DataJava interface with target values scaled to the range
@@ -55,7 +60,9 @@ public abstract class ScaledData implements DataJava {
 	protected final double[] scaled_target;
 	private Double target_min;
 	private Double target_max;
-
+        protected double[] minFeatures;
+        protected double[] maxFeatures;
+        
 	/**
 	 * A running mean for target values, used in ModelScaler
 	 */
@@ -70,6 +77,14 @@ public abstract class ScaledData implements DataJava {
 		target_min = null;
 		target_max = null;
 		targetMean = new ArithmeticMean();
+                minFeatures = new double[numberOfFeatures];
+                maxFeatures = new double[numberOfFeatures];
+                for(int i=0;i<numberOfFeatures;i++){
+                    minFeatures[i] = Double.MAX_VALUE;
+                    maxFeatures[i] = - Double.MAX_VALUE;
+                }
+                
+                
 	}
 
 	protected void addTargetValue(Double val,int index) {
@@ -94,53 +109,78 @@ public abstract class ScaledData implements DataJava {
 	protected void scaleTarget() {
 		double range = target_max - target_min;
 		for (int i = 0; i < this.target.length; i++) {
-			Double val = (this.target[i] - target_min) / range;
-			this.scaled_target[i] = val;
+                    Double val = (this.target[i] - target_min) / range;
+                    this.scaled_target[i] = val;
 		}
 	}
-
-        @Override
-       	public double[][] getInputValues(){
-            return fitnessCases;
+        
+    public void normalizeValues(String newFilePath,String pathToBounds) throws IOException{
+        BufferedWriter bw = new BufferedWriter(new FileWriter(newFilePath));
+        PrintWriter printWriter = new PrintWriter(bw);
+        for(int i=0;i<numberOfFitnessCases;i++){
+            for(int j=0;j<numberOfFeatures;j++){
+                double range = maxFeatures[j] - minFeatures[j];
+                Double val = (fitnessCases[i][j] - minFeatures[j]) / range;
+                printWriter.write(val + ",");
+            }
+            double targetValue = this.scaled_target[i];
+            printWriter.write(targetValue + "\n");
         }
-
-        @Override
-	public double[] getTargetValues(){
-            return target;
+        printWriter.flush();
+        printWriter.close();
+        
+        BufferedWriter bwNormCoeffs = new BufferedWriter(new FileWriter(pathToBounds));
+        PrintWriter printWriterNormCoeffs = new PrintWriter(bwNormCoeffs);
+        for(int j=0;j<numberOfFeatures;j++){
+            printWriterNormCoeffs.print(minFeatures[j] + " " + maxFeatures[j]+ "\n");
         }
+        printWriterNormCoeffs.print(target_min + " " + target_max + "\n");
+        printWriterNormCoeffs.flush();
+        printWriterNormCoeffs.close();
+    }
+        
+    @Override
+    public double[][] getInputValues(){
+        return fitnessCases;
+    }
 
-        @Override
-	public double[] getScaledTargetValues(){
-            return scaled_target;
-        }
+    @Override
+    public double[] getTargetValues(){
+        return target;
+    }
+
+    @Override
+    public double[] getScaledTargetValues(){
+        return scaled_target;
+    }
         
 
 
-	@Override
-	public Double getTargetMax() {
-		return target_max;
-	}
+    @Override
+    public Double getTargetMax() {
+        return target_max;
+    }
 
-	@Override
-	public Double getTargetMin() {
-		return target_min;
-	}
+    @Override
+    public Double getTargetMin() {
+        return target_min;
+    }
 
-        /**
-         * @return the numberOfFitnessCases
-         */
-        @Override
-        public int getNumberOfFitnessCases() {
-            return numberOfFitnessCases;
-        }
+    /**
+     * @return the numberOfFitnessCases
+     */
+    @Override
+    public int getNumberOfFitnessCases() {
+        return numberOfFitnessCases;
+    }
 
-        /**
-         * @return the numberOfFeatures
-         */
-        @Override
-        public int getNumberOfFeatures() {
-            return numberOfFeatures;
-        }
+    /**
+     * @return the numberOfFeatures
+     */
+    @Override
+    public int getNumberOfFeatures() {
+        return numberOfFeatures;
+    }
         
         
 }

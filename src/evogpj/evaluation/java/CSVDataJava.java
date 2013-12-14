@@ -56,6 +56,8 @@ public class CSVDataJava extends ScaledData {
 				token = f.readLine().split(",");
 				for (int i = 0; i < token.length - 1; i++) {
                                         this.fitnessCases[fitnessCaseIndex][i] = Double.valueOf(token[i]);
+                                        if(fitnessCases[fitnessCaseIndex][i] < minFeatures[i]) minFeatures[i] = fitnessCases[fitnessCaseIndex][i];
+                                        if(fitnessCases[fitnessCaseIndex][i] > maxFeatures[i]) maxFeatures[i] = fitnessCases[fitnessCaseIndex][i];
 				}
 				Double val = Double.valueOf(token[token.length - 1]);
 				addTargetValue(val, fitnessCaseIndex);

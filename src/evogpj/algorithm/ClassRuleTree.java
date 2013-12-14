@@ -17,19 +17,13 @@
  */
 package evogpj.algorithm;
 
-import evogpj.postprocessing.ModelFuserARM;
+import static evogpj.algorithm.SymbRegMOO.loadProps;
 import evogpj.evaluation.java.CSVDataJava;
 import evogpj.evaluation.java.DataJava;
-import evogpj.evaluation.cpp.DataCpp;
-import evogpj.evaluation.cuda.DataCuda;
-import evogpj.evaluation.cpp.SRCpp;
-import evogpj.evaluation.cuda.SRCuda;
 import evogpj.evaluation.FitnessFunction;
-import evogpj.evaluation.cpp.SRModelScalerCpp;
 import evogpj.evaluation.java.SubtreeComplexityFitness;
-import evogpj.evaluation.cuda.SRModelScalerCuda;
-import evogpj.evaluation.java.SRModelScalerJava;
-import evogpj.evaluation.java.SRJava;
+
+import evogpj.evaluation.java.TBRCJava;
 import evogpj.genotype.Tree;
 import evogpj.genotype.TreeGenerator;
 import evogpj.gp.GPException;
@@ -39,7 +33,6 @@ import evogpj.gp.Population;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -61,6 +54,8 @@ import evogpj.operator.SinglePointUniformCrossover;
 import evogpj.operator.SubtreeMutate;
 import evogpj.operator.TournamentSelection;
 import evogpj.operator.TreeInitialize;
+import evogpj.preprocessing.ComputeIntervals;
+import evogpj.preprocessing.Interval;
 import evogpj.sort.CrowdingSort;
 import evogpj.sort.DominatedCount;
 import evogpj.sort.DominatedCount.DominationException;
@@ -70,25 +65,20 @@ import evogpj.sort.DominatedCount.DominationException;
  * 
  * @author Owen Derby
  **/
-public class SymbRegMOO {
-    
-    /* NUMBER OF THREADS EMPLOYED IN THE EXERNAL EVALUATION */
-    protected int EXTERNAL_THREADS = Parameters.Defaults.EXTERNAL_THREADS;
-    
+public class ClassRuleTree {
+
+    // RANDOM SEED
+    protected Long SEED = Parameters.Defaults.SEED;
+
     /* DATA */
     // SYMBOLIC REGRESSION ON FUNCTION OR DATA
     protected String PROBLEM_TYPE = Parameters.Defaults.PROBLEM_TYPE;
     // TRAINING SET
     protected String PROBLEM = Parameters.Defaults.PROBLEM;
     protected int PROBLEM_SIZE = Parameters.Defaults.PROBLEM_SIZE;
-    // INTEGER TARGETS
-    protected boolean COERCE_TO_INT = Parameters.Defaults.COERCE_TO_INT;
     protected int TARGET_NUMBER = 1;
-    // FEATURES
-    protected List<String> TERM_SET;
     // CROSS-VALIDATION SET FOR SYMBOLIC REGRESSION-BASED CLASSIFICATION
     protected String CROSS_VAL_SET = Parameters.Defaults.CROSS_VAL_SET;
-    
     
     /* PARAMETERS GOVERNING THE GENETIC PROGRAMMING PROCESS */
     // POPULATION SIZE
@@ -100,10 +90,14 @@ public class SymbRegMOO {
     // TIME OUT
     protected Long TIMEOUT;
     
-    // MUTATION RATE
-    protected double MUTATION_RATE = Parameters.Defaults.MUTATION_RATE;
-    // CROSSOVER RATE
-    protected double XOVER_RATE = Parameters.Defaults.XOVER_RATE;
+    // FEATURES
+    protected List<String> TERM_SET;
+    // CONDITION SET FOR TREE-BASED RULE CLASSIFIER
+    protected List<String> COND_SET;
+    // ALL THE OPERATORS USED TO BUILD GP TREES
+    protected List<String> FUNC_SET;
+    // UNARY OPERATORS USED TO BUILD GP TREES
+    protected List<String> UNARY_FUNC_SET;
     
     
     // DEFAULT MUTATION OPERATOR
@@ -112,30 +106,27 @@ public class SymbRegMOO {
     protected String SELECT = Parameters.Defaults.SELECT;
     // DEFAULT CROSSOVER OPERATOR
     protected String XOVER = Parameters.Defaults.XOVER;
+    // CROSSOVER RATE
+    protected double XOVER_RATE = Parameters.Defaults.XOVER_RATE;
     // DEFAULT MUTATION OPERATOR
     protected String MUTATE = Parameters.Defaults.MUTATE;
-    // DEFAULT MUTATION OPERATOR
+    // MUTATION RATE
+    protected double MUTATION_RATE = Parameters.Defaults.MUTATION_RATE;
+    // DEFAULT FITNESS OPERATOR
     protected String FITNESS = Parameters.Defaults.FITNESS;
-    // METHOD EMPLOYED TO AGGREGATE THE FITNESS OF CANDIDATE SOLUTIONS
-    protected int MEAN_POW = Parameters.Defaults.MEAN_POW;
+    /* NUMBER OF THREADS EMPLOYED IN THE EXERNAL EVALUATION */
+    protected int EXTERNAL_THREADS = Parameters.Defaults.EXTERNAL_THREADS;
     // METHOD EMPLOYED TO SELECT A SOLUTION FROM A PARETO FRONT
     protected String FRONT_RANK_METHOD = Parameters.Defaults.FRONT_RANK_METHOD;
     
     
-    // ALL THE OPERATORS USED TO BUILD GP TREES
-    protected List<String> FUNC_SET = Parameters.Defaults.FUNCTIONS;
-    
-    // UNARY OPERATORS USED TO BUILD GP TREES
-    protected List<String> UNARY_FUNC_SET = Parameters.Defaults.UNARY_FUNCTIONS;  
-    
-    // RANDOM SEED
-    protected Long SEED = Parameters.Defaults.SEED;
-    
     /* LOG FILES*/
+    // LOG CONDITIONS
+    protected String CONDITIONS_PATH = Parameters.Defaults.CONDITIONS_PATH;
     // LOG BEST INDIVIDUAL PER GENERATION
     protected String MODELS_PATH = Parameters.Defaults.MODELS_PATH;
     // LOG BEST INDIVIDUAL WITH RESPECT TO CROSS-VALIDATION SET IN CLASSIFICATION
-    protected String MODELS_CV_PATH = Parameters.Defaults.MODELS_CV_PATH;
+    protected String MODELS_CV_PATH = Parameters.Defaults.MODELS_CV_PATH;    
     // LOG FINAL PARETO FRONT
     protected String PARETO_PATH = Parameters.Defaults.PARETO_PATH;
     // LOG least complex ind
@@ -144,8 +135,14 @@ public class SymbRegMOO {
     protected String MOST_ACCURATE_PATH = Parameters.Defaults.MOST_ACCURATE_PATH;
     // LOG the model on the knee of the Pareto Front
     protected String KNEE_PATH = Parameters.Defaults.KNEE_PATH;
-    // LOG the fused Pareto Front
-    protected String FUSED_PATH = Parameters.Defaults.FUSED_PATH;
+    
+    
+    /* FALSE POSITIVE AND FALSE NEGATIVE WEIGHT FOR THE COST FUNCTION*/
+    protected double FALSE_POSITIVE_WEIGHT = Parameters.Defaults.FALSE_POSITIVE_WEIGHT;
+    protected double FALSE_NEGATIVE_WEIGHT = Parameters.Defaults.FALSE_NEGATIVE_WEIGHT;
+    
+    // computed intervals for the explanatory variables
+    protected ArrayList<Interval> intervals;
     
     /* CANDIDATE SOLUTIONS MAINTAINED DURING THE SEARCH */
     // CURRENT POPULATION
@@ -186,12 +183,19 @@ public class SymbRegMOO {
     protected int counterConvergence;
     // CURRENT FITNESS OF BEST INDIVIDUAL
     protected double lastFitness;
-    
-    // LINEAR SCALING OF BEST INDIVIDUAL PER GENERATION
-    protected SRModelScalerJava modelScalerJava;
-    protected SRModelScalerCpp modelScalerCpp;
-    protected SRModelScalerCuda modelScalerCuda;
 
+    /**
+     * Empty constructor, to allow subclasses to override
+     */
+    public ClassRuleTree() {
+        fitnessFunctions = new LinkedHashMap<String, FitnessFunction>();
+        finished = false;
+        generation = 0;
+        counterConvergence = 0;
+        lastFitness = 0;
+        startTime = System.currentTimeMillis();
+    }
+    
     /**
      * Create an instance of the algorithm. This simply initializes all the
      * operators to the default parameters or whatever they are set to in the
@@ -208,15 +212,24 @@ public class SymbRegMOO {
      *            A seed to use for the RNG. This allows for repeating the same
      *            trials over again.
      */
-    public SymbRegMOO(Properties props,long timeout) throws IOException {
+    public ClassRuleTree(Properties props,long timeout) throws IOException {
         this();
         if (timeout > 0)
             TIMEOUT = startTime + (timeout * 1000);
         loadParams(props);
         create_operators(props,SEED);
     }
+
+    public ClassRuleTree(String propFile,long timeout) throws IOException {
+        this();
+        if (timeout > 0)
+            TIMEOUT = startTime + (timeout * 1000);
+        Properties props = loadProps(propFile);
+        loadParams(props);
+        create_operators(props,SEED);
+    }
     
-    public SymbRegMOO(Properties aProps,String propFile,long timeout) throws IOException {
+    public ClassRuleTree(Properties aProps, String propFile, long timeout) throws IOException {
         this();
         Properties props = loadProps(propFile);
         if (timeout > 0)
@@ -232,34 +245,6 @@ public class SymbRegMOO {
         create_operators(props,SEED);
     }
     
-    public SymbRegMOO(String propFile,long timeout) throws IOException {
-        this();
-        if (timeout > 0)
-            TIMEOUT = startTime + (timeout * 1000);
-        Properties props = loadProps(propFile);
-        loadParams(props);
-        create_operators(props,SEED);
-    }
-    
-    public SymbRegMOO(String propFile) throws IOException {
-        this();
-        Properties props = loadProps(propFile);
-        loadParams(props);
-        create_operators(props,SEED);
-    }
-
-    /**
-     * Empty constructor, to allow subclasses to override
-     */
-    public SymbRegMOO() {
-        fitnessFunctions = new LinkedHashMap<String, FitnessFunction>();
-        finished = false;
-        generation = 0;
-        counterConvergence = 0;
-        lastFitness = 0;
-        startTime = System.currentTimeMillis();
-    }
-
     /**
      * Read parameters from the Property object and set Algorithm variables.
      * 
@@ -268,37 +253,23 @@ public class SymbRegMOO {
     protected void loadParams(Properties props) {
         if (props.containsKey(Parameters.Names.SEED))
             SEED = Long.valueOf(props.getProperty(Parameters.Names.SEED)).longValue();
-        if (props.containsKey(Parameters.Names.EXTERNAL_THREADS))
-            EXTERNAL_THREADS = Integer.valueOf(props.getProperty(Parameters.Names.EXTERNAL_THREADS));
-        if (props.containsKey(Parameters.Names.FITNESS))
-            FITNESS = props.getProperty(Parameters.Names.FITNESS);            
-        if (props.containsKey(Parameters.Names.MUTATION_RATE))
-            MUTATION_RATE = Double.valueOf(props.getProperty(Parameters.Names.MUTATION_RATE));
-        if (props.containsKey(Parameters.Names.XOVER_RATE))
-            XOVER_RATE = Double.valueOf(props.getProperty(Parameters.Names.XOVER_RATE));
-        if (props.containsKey(Parameters.Names.POP_SIZE))
-            POP_SIZE = Integer.valueOf(props.getProperty(Parameters.Names.POP_SIZE));
-        if (props.containsKey(Parameters.Names.POP_DATA_PATH))
-            MODELS_PATH = props.getProperty(Parameters.Names.MODELS_PATH);
-        if (props.containsKey(Parameters.Names.NUM_GENS))
-            NUM_GENS = Integer.valueOf(props.getProperty(Parameters.Names.NUM_GENS));
-        if (props.containsKey(Parameters.Names.PROBLEM))
-            PROBLEM = props.getProperty(Parameters.Names.PROBLEM);
-        if (props.containsKey(Parameters.Names.CROSS_VAL_SET))
-            CROSS_VAL_SET = props.getProperty(Parameters.Names.CROSS_VAL_SET);            
+        
         if (props.containsKey(Parameters.Names.PROBLEM_TYPE))
             PROBLEM_TYPE = props.getProperty(Parameters.Names.PROBLEM_TYPE);
+        if (props.containsKey(Parameters.Names.PROBLEM))
+            PROBLEM = props.getProperty(Parameters.Names.PROBLEM);
         if (props.containsKey(Parameters.Names.PROBLEM_SIZE))
             PROBLEM_SIZE = Integer.parseInt(props.getProperty(Parameters.Names.PROBLEM_SIZE));
-        if (props.containsKey(Parameters.Names.MEAN_POW))
-            MEAN_POW = Integer.valueOf(props.getProperty(Parameters.Names.MEAN_POW));
-        if (props.containsKey(Parameters.Names.COERCE_TO_INT))
-            COERCE_TO_INT = Boolean.parseBoolean(props.getProperty(Parameters.Names.COERCE_TO_INT));
         if (props.containsKey(Parameters.Names.FUNCTION_SET)) {
             String funcs[] = props.getProperty(Parameters.Names.FUNCTION_SET).split(" ");
             FUNC_SET = new ArrayList<String>();
             for (int i = 0; i < funcs.length; i++)
                     FUNC_SET.add(funcs[i]);
+        }else{
+            FUNC_SET = new ArrayList<String>();
+            FUNC_SET.add("and");
+            FUNC_SET.add("or");
+            FUNC_SET.add("not");
         }
         if (props.containsKey(Parameters.Names.UNARY_FUNCTION_SET)) {
             String funcs[] = props.getProperty(Parameters.Names.UNARY_FUNCTION_SET).split(" ");
@@ -309,8 +280,6 @@ public class SymbRegMOO {
         if (props.containsKey(Parameters.Names.TERMINAL_SET)) {
             String term = props.getProperty(Parameters.Names.TERMINAL_SET);
             if (term.equalsIgnoreCase("all")) {
-                // defer populating terminal list until we know our problem
-                // size!
                 TERM_SET = null;
             } else {
                 String terms[] = term.split(" ");
@@ -319,17 +288,39 @@ public class SymbRegMOO {
                         TERM_SET.add(terms[i]);
             }
         }
-        if (props.containsKey(Parameters.Names.MUTATE))
-                MUTATE = props.getProperty(Parameters.Names.MUTATE);
-        if (props.containsKey(Parameters.Names.XOVER))
-                XOVER = props.getProperty(Parameters.Names.XOVER);
-        if (props.containsKey(Parameters.Names.SELECTION))
-                SELECT = props.getProperty(Parameters.Names.SELECTION);
-        if (props.containsKey(Parameters.Names.INITIALIZE))
-                INITIALIZE = props.getProperty(Parameters.Names.INITIALIZE);
-        if (props.containsKey(Parameters.Names.FRONT_RANK_METHOD))
-                FRONT_RANK_METHOD = props.getProperty(Parameters.Names.FRONT_RANK_METHOD);
         
+        if (props.containsKey(Parameters.Names.POP_SIZE))
+            POP_SIZE = Integer.valueOf(props.getProperty(Parameters.Names.POP_SIZE));
+        if (props.containsKey(Parameters.Names.NUM_GENS))
+            NUM_GENS = Integer.valueOf(props.getProperty(Parameters.Names.NUM_GENS));
+
+        if (props.containsKey(Parameters.Names.INITIALIZE))
+            INITIALIZE = props.getProperty(Parameters.Names.INITIALIZE);
+        if (props.containsKey(Parameters.Names.SELECTION))
+            SELECT = props.getProperty(Parameters.Names.SELECTION);
+        if (props.containsKey(Parameters.Names.XOVER))
+            XOVER = props.getProperty(Parameters.Names.XOVER);
+        if (props.containsKey(Parameters.Names.XOVER_RATE))
+            XOVER_RATE = Double.valueOf(props.getProperty(Parameters.Names.XOVER_RATE));
+        if (props.containsKey(Parameters.Names.MUTATE))
+            MUTATE = props.getProperty(Parameters.Names.MUTATE);
+        if (props.containsKey(Parameters.Names.MUTATION_RATE))
+            MUTATION_RATE = Double.valueOf(props.getProperty(Parameters.Names.MUTATION_RATE));
+        if (props.containsKey(Parameters.Names.FITNESS))
+            FITNESS = props.getProperty(Parameters.Names.FITNESS);
+        if(props.containsKey(Parameters.Names.FALSE_POSITIVE_WEIGHT))
+            FALSE_POSITIVE_WEIGHT = Double.valueOf(props.getProperty(Parameters.Names.FALSE_POSITIVE_WEIGHT));
+        if(props.containsKey(Parameters.Names.FALSE_NEGATIVE_WEIGHT))
+            FALSE_NEGATIVE_WEIGHT = Double.valueOf(props.getProperty(Parameters.Names.FALSE_NEGATIVE_WEIGHT));
+        if (props.containsKey(Parameters.Names.EXTERNAL_THREADS))
+            EXTERNAL_THREADS = Integer.valueOf(props.getProperty(Parameters.Names.EXTERNAL_THREADS));
+        if (props.containsKey(Parameters.Names.FRONT_RANK_METHOD))
+            FRONT_RANK_METHOD = props.getProperty(Parameters.Names.FRONT_RANK_METHOD);
+        
+        if (props.containsKey(Parameters.Names.POP_DATA_PATH))
+            MODELS_PATH = props.getProperty(Parameters.Names.MODELS_PATH);
+        if (props.containsKey(Parameters.Names.CROSS_VAL_SET))
+            CROSS_VAL_SET = props.getProperty(Parameters.Names.CROSS_VAL_SET);
     }
 
     /**
@@ -361,52 +352,34 @@ public class SymbRegMOO {
         rand = new MersenneTwisterFast(seed);
         fitnessFunctions = splitFitnessOperators(FITNESS);
         for (String fitnessOperatorName : fitnessFunctions.keySet()) {
-            if (fitnessOperatorName.equals(Parameters.Operators.SR_JAVA_FITNESS)) {
+            if (fitnessOperatorName.equals(Parameters.Operators.RBC_JAVA_FITNESS)) {
                 DataJava data = new CSVDataJava(PROBLEM);
+                intervals =  new ArrayList<Interval>();
                 if (TERM_SET == null) {
                     TERM_SET = new ArrayList<String>();
                     for (int i = 0; i < data.getNumberOfFeatures(); i++) TERM_SET.add("X" + (i + 1));
                     System.out.println(TERM_SET);
                 }
-                fitnessFunctions.put(fitnessOperatorName,new SRJava(data, props,fitnessOperatorName));
-                modelScalerJava = new SRModelScalerJava(data);
-            } else if (fitnessOperatorName.equals(Parameters.Operators.SR_CPP_FITNESS)) {
-                // this loads the data into shared memory
-                DataCpp ed = new DataCpp(PROBLEM, TARGET_NUMBER);
-                ed.readAndStoreDataset();
-                int numberOfFeatures = ed.getNumberOfFeatures();
-                int numberOfFitnessCases = ed.getNumberOfFitnessCases();
-                ed = null;
-                // create an external model scaler
-                modelScalerCpp = new SRModelScalerCpp(FUNC_SET, UNARY_FUNC_SET, PROBLEM,numberOfFitnessCases, numberOfFeatures,
-                                                        TARGET_NUMBER, EXTERNAL_THREADS, MEAN_POW,COERCE_TO_INT);
-                if (TERM_SET == null) {
-                    TERM_SET = new ArrayList<String>();
-                    for (int i = 0; i < numberOfFeatures; i++) TERM_SET.add("X" + (i + 1));
-                    System.out.println(TERM_SET);
+                int numberOfSteps = 100;
+                ComputeIntervals ci = new ComputeIntervals(data,numberOfSteps);
+                for (int i = 0; i < data.getNumberOfFeatures(); i++) {
+                    ArrayList<Interval> alIntervalAux = ci.computeIntervalsVariable(i,TERM_SET.get(i));
+                    for(int j=0;j<alIntervalAux.size();j++) intervals.add(alIntervalAux.get(j));
                 }
-                SRCpp esrf = new SRCpp(FUNC_SET, UNARY_FUNC_SET, PROBLEM,numberOfFitnessCases, numberOfFeatures,
-                                                                TARGET_NUMBER, EXTERNAL_THREADS, MEAN_POW,COERCE_TO_INT);
-                fitnessFunctions.put(fitnessOperatorName, esrf);
-            } else if (fitnessOperatorName.equals(Parameters.Operators.SR_CUDA_FITNESS)) {
-                // this loads the data into shared memory
-                DataCuda ed = new DataCuda(PROBLEM, 1);
-                ed.readAndStoreDataset();
-                int numberOfFeatures = ed.getNumberOfFeatures();
-                int numberOfFitnessCases = ed.getNumberOfFitnessCases();
-                ed = null;
-                if (TERM_SET == null) {
-                    TERM_SET = new ArrayList<String>();
-                    for (int i = 0; i < numberOfFeatures; i++){
-                        TERM_SET.add("X" + (i + 1));
-                    }
-                    System.out.println(TERM_SET);
+                COND_SET = new ArrayList<String>();
+                for (int i = 0; i < intervals.size(); i++){ 
+                    COND_SET.add("C" + (i + 1));
                 }
-                modelScalerCuda = new SRModelScalerCuda(FUNC_SET, UNARY_FUNC_SET, PROBLEM, numberOfFitnessCases, 
-                    TERM_SET.size(), TARGET_NUMBER, EXTERNAL_THREADS, MEAN_POW, COERCE_TO_INT);
+                System.out.println(COND_SET);
+                this.saveText(CONDITIONS_PATH, "", false);
+                for(int i=0;i<intervals.size();i++){
+                    Interval iAux = intervals.get(i);
+                    String cAux = COND_SET.get(i);
+                    this.saveText(CONDITIONS_PATH, cAux + " : " + iAux.getVariable() + " in [ " + iAux.getLb() + " ; " + iAux.getUb() + " ]\n", true);
+                }
+                
+                fitnessFunctions.put(fitnessOperatorName,new TBRCJava(data, intervals,0.5,0.5));
 
-                SRCuda esrf = new SRCuda(FUNC_SET, UNARY_FUNC_SET, PROBLEM,numberOfFitnessCases, numberOfFeatures,TARGET_NUMBER, EXTERNAL_THREADS, MEAN_POW,COERCE_TO_INT,0);
-                fitnessFunctions.put(fitnessOperatorName, esrf);
             } else if (fitnessOperatorName.equals(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS)) {
                 fitnessFunctions.put(fitnessOperatorName,new SubtreeComplexityFitness());
             } else {
@@ -415,7 +388,7 @@ public class SymbRegMOO {
             }
         }
 
-        TreeGenerator treeGen = new TreeGenerator(rand, FUNC_SET, TERM_SET);
+        TreeGenerator treeGen = new TreeGenerator(rand, FUNC_SET, COND_SET);
         if (INITIALIZE.equals(Parameters.Operators.TREE_INITIALIZE)) {
             initialize = new TreeInitialize(rand, props, treeGen);
         } else {
@@ -571,7 +544,7 @@ public class SymbRegMOO {
                     best = individual;
                 }
             } else if (FRONT_RANK_METHOD.equals(Parameters.Names.FIRST_FITNESS)) {
-                if(individual.getFitness() > best.getFitness()){
+                if(individual.getFitness() < best.getFitness()){
                     best = individual;
                 }
             } else {
@@ -596,7 +569,6 @@ public class SymbRegMOO {
     * @return the best individual found.
     */
     public Individual run_population() throws IOException {
-        Individual bestOnCrossVal = null;
         bestPop = new Population();
         // get the best individual
         best = pop.get(0);
@@ -615,10 +587,7 @@ public class SymbRegMOO {
             // print information about this generation
             //System.out.format("Statistics: %d " + calculateStats() + "%n", generation);
             System.out.format("Best individual for generation %d:%n", generation);
-            double MSE = best.getFitness();
-            MSE = ((1-MSE) / (MSE + 1));
             System.out.println(best.getFitnesses());
-            System.out.println(MSE);
             System.out.flush();
 
             bestPop.add(best);
@@ -627,120 +596,41 @@ public class SymbRegMOO {
             
         }
 
-        String firstFitnessFunction = fitnessFunctions.keySet().iterator().next();
-        if (firstFitnessFunction.equals(Parameters.Operators.SR_JAVA_FITNESS) ){
-            //scale and save best model of each iteration
-            for(Individual ind:bestPop){
-                modelScalerJava.scaleModel(ind);
-                this.saveText(MODELS_PATH, ind.toScaledString() + "\n", true);
-            }
-            Individual acc = paretoFront.get(0);
-            Individual comp = paretoFront.get(0);
-            Individual knee = paretoFront.get(0);
-            paretoFront.calculateEuclideanDistances(fitnessFunctions);
-            for(Individual ind:paretoFront){
-                if(ind.getFitness(Parameters.Operators.SR_JAVA_FITNESS) > acc.getFitness(Parameters.Operators.SR_JAVA_FITNESS)){
-                    acc = ind;
-                }
-                if(ind.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS) < comp.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS)){
-                    comp = ind;
-                }
-                if(ind.getEuclideanDistance()<knee.getEuclideanDistance()){
-                    knee = ind;
-                }
-                modelScalerJava.scaleModel(ind);
-                this.saveText(PARETO_PATH, ind.toScaledString() + "\n", true);
-            }
-            this.saveText(LEAST_COMPLEX_PATH, comp.toScaledString() + "\n", true);
-            this.saveText(MOST_ACCURATE_PATH, acc.toScaledString() + "\n", true);
-            this.saveText(KNEE_PATH, knee.toScaledString() + "\n", true);
-        } else if (firstFitnessFunction.equals(Parameters.Operators.SR_CPP_FITNESS) ){
-            //scale and save best model of each iteration
-            modelScalerCpp.scalePop(bestPop);
-            for(Individual ind:bestPop){
-                this.saveText(MODELS_PATH, ind.toScaledString() + "\n", true);
-            }
-            paretoFront.calculateEuclideanDistances(fitnessFunctions);
-            modelScalerCpp.scalePop(paretoFront);
-            Individual acc = paretoFront.get(0);
-            Individual comp = paretoFront.get(0);
-            Individual knee = paretoFront.get(0);
-            for(Individual ind:paretoFront){
-                if(ind.getFitness(Parameters.Operators.SR_CPP_FITNESS) > acc.getFitness(Parameters.Operators.SR_CPP_FITNESS)){
-                    acc = ind;
-                }
-                if(ind.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS) < comp.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS)){
-                    comp = ind;
-                }
-                if(ind.getEuclideanDistance()<knee.getEuclideanDistance()){
-                    knee = ind;
-                }
-                this.saveText(PARETO_PATH, ind.toScaledString() + "\n", true);
-            }
-            this.saveText(LEAST_COMPLEX_PATH, comp.toScaledString() + "\n", true);
-            this.saveText(MOST_ACCURATE_PATH, acc.toScaledString() + "\n", true);
-            this.saveText(KNEE_PATH, knee.toScaledString() + "\n", true);
-            
-        } else if (firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS) 
-                || firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_DUAL)
-                || firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_CORRELATION)
-                || firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_CORRELATION_DUAL)){
-            //scale and save best model of each iteration
-            modelScalerCuda.scalePop(bestPop);
-            for(Individual ind:bestPop){
-                this.saveText(MODELS_PATH, ind.toScaledString() + "\n", true);
-            }
-            paretoFront.calculateEuclideanDistances(fitnessFunctions);
-            modelScalerCuda.scalePop(paretoFront);
-            Individual acc = paretoFront.get(0);
-            Individual comp = paretoFront.get(0);
-            Individual knee = paretoFront.get(0);
-            for(Individual ind:paretoFront){
-                if(ind.getFitness(Parameters.Operators.SR_CUDA_FITNESS) > acc.getFitness(Parameters.Operators.SR_CUDA_FITNESS)){
-                    acc = ind;
-                }
-                if(ind.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS) < comp.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS)){
-                    comp = ind;
-                }
-                if(ind.getEuclideanDistance()<knee.getEuclideanDistance()){
-                    knee = ind;
-                }
-                this.saveText(PARETO_PATH, ind.toScaledString() + "\n", true);
-            }
-            this.saveText(LEAST_COMPLEX_PATH, comp.toScaledString() + "\n", true);
-            this.saveText(MOST_ACCURATE_PATH, acc.toScaledString() + "\n", true);
-            this.saveText(KNEE_PATH, knee.toScaledString() + "\n", true);
-        }  
-        // finally, deallocate dataset from shared memory
-        if (firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS) 
-                || firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_DUAL)
-                || firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_CORRELATION)
-                || firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_CORRELATION_DUAL)) {
-                DataCuda ed = new DataCuda(PROBLEM, TARGET_NUMBER);
-                ed.deallocateDataset();
-        } else if(firstFitnessFunction.equals(Parameters.Operators.SR_CPP_FITNESS)){
-            DataCpp ed = new DataCpp(PROBLEM, TARGET_NUMBER);
-            ed.deallocateDataset();
+        // SAVE BEST PER GENERATION + fitness 
+        for(Individual ind:bestPop){
+            this.saveText(MODELS_PATH, ind.getGenotype().toString() + ",", true);
+            this.saveText(MODELS_PATH, ind.getFitness(Parameters.Operators.RBC_JAVA_FITNESS) + "\n" , true);
         }
-        
-        // FUSE THE PARETO FRONT WITH ARM
-        fuseParetoFront();
-        return bestOnCrossVal;
-    }
-    
-    public void fuseParetoFront(){
-        int iters = 100;
-        ModelFuserARM mfa = new ModelFuserARM(PROBLEM,TERM_SET.size(),paretoFront,iters,COERCE_TO_INT);
-        double[] weights = mfa.arm_weights();
-        
-        // print final model
-        for(int i=0;i<paretoFront.size();i++){
-            this.saveText(FUSED_PATH, "+ " + weights[i] + " " + paretoFront.get(i).toScaledString() + "\n", true);
+        Individual acc = paretoFront.get(0);
+        Individual comp = paretoFront.get(0);
+        Individual knee = paretoFront.get(0);
+        paretoFront.calculateEuclideanDistances(fitnessFunctions);
+        this.saveText(PARETO_PATH, "", false);
+        for(Individual ind:paretoFront){
+            if(ind.getFitness(Parameters.Operators.RBC_JAVA_FITNESS) < acc.getFitness(Parameters.Operators.RBC_JAVA_FITNESS)){
+                acc = ind;
+            }
+            if(ind.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS) < comp.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS)){
+                comp = ind;
+            }
+            if(ind.getEuclideanDistance()<knee.getEuclideanDistance()){
+                knee = ind;
+            }
+            this.saveText(PARETO_PATH, ind.getGenotype().toString() + ",", true);
+            this.saveText(PARETO_PATH, ind.getFitness(Parameters.Operators.RBC_JAVA_FITNESS) + "\n" , true);
         }
+        this.saveText(LEAST_COMPLEX_PATH, comp.getGenotype().toString() + ",", false);
+        this.saveText(LEAST_COMPLEX_PATH, comp.getFitness(Parameters.Operators.RBC_JAVA_FITNESS) + "\n" , true);
+
+        this.saveText(MOST_ACCURATE_PATH, acc.getGenotype().toString() + ",", false);
+        this.saveText(MOST_ACCURATE_PATH, acc.getFitness(Parameters.Operators.RBC_JAVA_FITNESS) + "\n" , true);
         
-        System.out.println();
+        this.saveText(KNEE_PATH, knee.getGenotype().toString() + ",", false);
+        this.saveText(KNEE_PATH, knee.getFitness(Parameters.Operators.RBC_JAVA_FITNESS) + "\n" , true);
+
+        return best;
     }
-    
+     
     public boolean stopCriteria(){
         boolean stop = false;
         if( System.currentTimeMillis() >= TIMEOUT){
@@ -748,51 +638,31 @@ public class SymbRegMOO {
             return true;
         }
         String firstFitnessFunction = fitnessFunctions.keySet().iterator().next();
-        if(firstFitnessFunction.equals(Parameters.Operators.SR_CPP_FITNESS)){
-            double currentFitness = best.getFitness(Parameters.Operators.SR_CPP_FITNESS);
-            if(currentFitness>0.999){
+        if(firstFitnessFunction.equals(Parameters.Operators.RBC_JAVA_FITNESS)){
+            double currentFitness = best.getFitness(Parameters.Operators.RBC_JAVA_FITNESS);
+            if(currentFitness<0.00001){
                 stop = true;
             }
-        } else if (firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS)){
-            double currentFitness = best.getFitness(Parameters.Operators.SR_CUDA_FITNESS);
-            if(currentFitness>0.999){
-                stop = true;
-            }
-        } else if (firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_DUAL)){
-            double currentFitness = best.getFitness(Parameters.Operators.SR_CUDA_FITNESS_DUAL);
-            if(currentFitness>0.999){
-                stop = true;
-            }
-        } else if(firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_CORRELATION)){
-            double currentFitness = best.getFitness(Parameters.Operators.SR_CUDA_FITNESS_CORRELATION);
-            if(currentFitness>0.999){
-                stop = true;
-            }
-        } else if(firstFitnessFunction.equals(Parameters.Operators.SR_CUDA_FITNESS_CORRELATION_DUAL)){
-            double currentFitness = best.getFitness(Parameters.Operators.SR_CUDA_FITNESS_CORRELATION_DUAL);
-            if(currentFitness>0.999){
-                stop = true;
-            }
-        } 
+        }  
         return stop;
     }
-        
+
     public static Properties loadProps(String propFile) {
-            Properties props = new Properties();
-            BufferedReader f;
-            try {
-                    f = new BufferedReader(new FileReader(propFile));
-            } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    return null;
-            }
-            try {
-                    props.load(f);
-            } catch (IOException e) {
-                    e.printStackTrace();
-            }
-            System.out.println(props.toString());
-            return props;
+        Properties props = new Properties();
+        BufferedReader f;
+        try {
+            f = new BufferedReader(new FileReader(propFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        try {
+            props.load(f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(props.toString());
+        return props;
     }
 
     /**
@@ -851,5 +721,4 @@ public class SymbRegMOO {
     public List<String> getUnaryFuncs(){
         return UNARY_FUNC_SET;
     }
-  
 }

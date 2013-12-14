@@ -51,9 +51,13 @@ public class SRRocCVCpp extends FitnessFunction {
 	String datasetPath;
 	int numberOfFitnessCases, numberOfFeatures, numberOfResults,
 			currentMaxSize, numberOfThreads;
+        
+        private float fpWeight,fnWeight;
+        private int numLambdas;
+        
 	
 	public SRRocCVCpp(List<String> aFUNC_SET,List<String> aUNARY_FUNC_SET, String aDataset,int aNumberOfFitnessCases, int aNumberOfFeatures,
-                                int aNumberOfResults, int aNumberOfThreads) {
+                                int aNumberOfResults, int aNumberOfThreads, float afpWeight,float afnWeight,int aNumLambdas) {
 		FUNC_SET = (ArrayList<String>) aFUNC_SET;
 		UNARY_FUNC_SET = (ArrayList<String>) aUNARY_FUNC_SET;
 		datasetPath = aDataset;
@@ -62,6 +66,9 @@ public class SRRocCVCpp extends FitnessFunction {
 		numberOfResults = aNumberOfResults;
 		currentMaxSize = 0;
 		numberOfThreads = aNumberOfThreads;
+                fpWeight = afpWeight;
+                fnWeight = afnWeight;
+                numLambdas = aNumLambdas;
 	}
 
 	/**
@@ -113,7 +120,7 @@ public class SRRocCVCpp extends FitnessFunction {
 		groccv.setExpressions(expressions);
 		// gcpp.generateCode(numberOfIndividuals,datasetPath,numberOfFitnessCases,numberOfFeatures,numberOfResults);
 		startTime = System.currentTimeMillis();
-		groccv.generateCode(numberOfIndividuals, datasetPath,numberOfFitnessCases, numberOfFeatures, numberOfResults,numberOfThreads);
+		groccv.generateCode(numberOfIndividuals, datasetPath,numberOfFitnessCases, numberOfFeatures, numberOfResults,numberOfThreads,fpWeight,fnWeight,numLambdas);
 		System.out.format("Code generation: %f\n", (System.currentTimeMillis() - startTime) / 1000.0);
 		startTime = System.currentTimeMillis();
 		groccv.printCodeToFile(cppFile);

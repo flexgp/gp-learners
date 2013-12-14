@@ -41,51 +41,45 @@ import evogpj.gp.Population;
  * 
  * @author Owen Derby
  */
-public class SinglePointUniformCrossover extends RandomOperator implements
-		Crossover {
+public class SinglePointUniformCrossover extends RandomOperator implements Crossover {
 
-	private final int TREE_XOVER_MAX_DEPTH;
-	private final int TREE_XOVER_TRIES;
+    private final int TREE_XOVER_MAX_DEPTH;
+    private final int TREE_XOVER_TRIES;
 
-	/**
-	 * Create crossover operator which swaps subtrees at uniformly selected
-	 * points in two parent individuals. There are two parameters for this
-	 * operator.
-	 * <ul>
-	 * <li>The maximum depth allowed in new trees, specified by the key
-	 * {@value algorithm.Parameters.Names#TREE_XOVER_MAX_DEPTH}, which defaults
-	 * to {@value algorithm.Parameters.Defaults#TREE_XOVER_MAX_DEPTH}.
-	 * <li>The maximum number of times to try the crossover before giving up. A
-	 * crossover attempt fails if either of the new trees is too deep. This
-	 * parameter is specified by the key
-	 * {@value algorithm.Parameters.Names#TREE_XOVER_TRIES}, which defaults to
-	 * {@value algorithm.Parameters.Defaults#TREE_XOVER_TRIES}.
-	 * 
-	 * @param rand
-	 * @param props
-	 */
-	public SinglePointUniformCrossover(MersenneTwisterFast rand,
-			Properties props) {
-		super(rand);
-		if (props.containsKey(Parameters.Names.TREE_XOVER_MAX_DEPTH))
-			TREE_XOVER_MAX_DEPTH = Integer.valueOf(props
-					.getProperty(Parameters.Names.TREE_XOVER_MAX_DEPTH));
-		else
-			TREE_XOVER_MAX_DEPTH = Parameters.Defaults.TREE_XOVER_MAX_DEPTH;
-		if (props.containsKey(Parameters.Names.TREE_XOVER_TRIES))
-			TREE_XOVER_TRIES = Integer.valueOf(props
-					.getProperty(Parameters.Names.TREE_XOVER_TRIES));
-		else
-			TREE_XOVER_TRIES = Parameters.Defaults.TREE_XOVER_TRIES;
-	}
+    /**
+     * Create crossover operator which swaps subtrees at uniformly selected
+     * points in two parent individuals. There are two parameters for this
+     * operator.
+     * <ul>
+     * <li>The maximum depth allowed in new trees, specified by the key
+     * {@value algorithm.Parameters.Names#TREE_XOVER_MAX_DEPTH}, which defaults
+     * to {@value algorithm.Parameters.Defaults#TREE_XOVER_MAX_DEPTH}.
+     * <li>The maximum number of times to try the crossover before giving up. A
+     * crossover attempt fails if either of the new trees is too deep. This
+     * parameter is specified by the key
+     * {@value algorithm.Parameters.Names#TREE_XOVER_TRIES}, which defaults to
+     * {@value algorithm.Parameters.Defaults#TREE_XOVER_TRIES}.
+     * 
+     * @param rand
+     * @param props
+     */
+    public SinglePointUniformCrossover(MersenneTwisterFast rand,Properties props) {
+        super(rand);
+        if (props.containsKey(Parameters.Names.TREE_XOVER_MAX_DEPTH))
+            TREE_XOVER_MAX_DEPTH = Integer.valueOf(props.getProperty(Parameters.Names.TREE_XOVER_MAX_DEPTH));
+        else
+            TREE_XOVER_MAX_DEPTH = Parameters.Defaults.TREE_XOVER_MAX_DEPTH;
+        if (props.containsKey(Parameters.Names.TREE_XOVER_TRIES))
+            TREE_XOVER_TRIES = Integer.valueOf(props.getProperty(Parameters.Names.TREE_XOVER_TRIES));
+        else
+            TREE_XOVER_TRIES = Parameters.Defaults.TREE_XOVER_TRIES;
+    }
 
-	@Override
-	public Population crossOver(Individual ind1, Individual ind2)
-			throws GPException {
-		if (!(ind1.getGenotype() instanceof Tree && ind2.getGenotype() instanceof Tree)) {
-			throw new GPException(
-					"attempting SinglePointUniformCrossover of two genotypes not of type Tree");
-		}
+    @Override
+    public Population crossOver(Individual ind1, Individual ind2) throws GPException {
+            if (!(ind1.getGenotype() instanceof Tree && ind2.getGenotype() instanceof Tree)) {
+                throw new GPException("attempting SinglePointUniformCrossover of two genotypes not of type Tree");
+            }
 		Tree c1, c2;
 		int tries = 0;
 		do {
@@ -116,8 +110,7 @@ public class SinglePointUniformCrossover extends RandomOperator implements
 			xoverPt1.reset();
 			xoverPt2.reset();
 			tries++;
-		} while ((c1.getDepth() > TREE_XOVER_MAX_DEPTH || c2.getDepth() > TREE_XOVER_MAX_DEPTH)
-				&& tries < TREE_XOVER_TRIES);
+		} while ((c1.getDepth() > TREE_XOVER_MAX_DEPTH || c2.getDepth() > TREE_XOVER_MAX_DEPTH) && tries < TREE_XOVER_TRIES);
 		Population twoPop = new Population();
 		if (tries >= TREE_XOVER_TRIES) {
 			// System.out.println("failed to xover properly"+ c1.getDepth() +

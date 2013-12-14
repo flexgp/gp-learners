@@ -301,7 +301,7 @@ public final class Parameters {
          */
         public static final String MODELS_PATH = "bestModelGeneration.txt";
         public static final String CONDITIONS_PATH = "conditions.txt";
-        public static final String MODELS_CV_PATH = "modelsCV.txt";
+        public static final String MODELS_CV_PATH = "bestCrossValidation.txt";
         public static final String PARETO_PATH = "pareto.txt";
         public static final String LEAST_COMPLEX_PATH = "leastComplex.txt";
         public static final String MOST_ACCURATE_PATH = "mostAccurate.txt";

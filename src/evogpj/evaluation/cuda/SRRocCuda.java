@@ -133,7 +133,7 @@ public class SRRocCuda extends FitnessFunction {
             }else if (newMaxIndividualSize>maxIndSize){
                 compileInterpreter(numberOfIndividuals, newMaxIndividualSize);
                 System.out.println("Compiling RPN CUDA ... new Max Individual Size = " + newMaxIndividualSize);
-                maxIndSize = newMaxIndividualSize;
+                maxIndSize = newMaxIndividualSize*2;
                 numberOfIndi = numberOfIndividuals;
             }else if(numberOfIndividuals!=numberOfIndi){
                 compileInterpreter(numberOfIndividuals, newMaxIndividualSize);

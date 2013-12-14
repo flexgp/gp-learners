@@ -175,7 +175,7 @@ public class GenerateSRRocCVCpp {
 		}
 	}
 
-	private void generateFunctionIndividualScaled(int index) throws IOException {
+	private void generateFunctionIndividualScaled(int index,float fpWeight,float fnWeight,int numLambdas) throws IOException {
 		String intermediateCode = expressions[index].getIntermediateCode();
 		ArrayList<String> features = expressions[index].getFeatures();
 		int varAuxCount = expressions[index].getVarCounter();
@@ -248,7 +248,7 @@ public class GenerateSRRocCVCpp {
 		fw.append("\t}\n");
                 fw.append("\n");
                 
-                fw.append("\tint numberOfLambdas = 10;\n");
+                fw.append("\tint numberOfLambdas = " + numLambdas + ";\n");
                 fw.append("\tfloat startInterval = 0;\n");
                 fw.append("\tfloat endInterval = 1;\n");
                 fw.append("\tfloat interval = (endInterval - startInterval) / (float) numberOfLambdas;\n");
@@ -312,7 +312,7 @@ public class GenerateSRRocCVCpp {
 			fw.append("\t\tfloat fp = falsePositives[l];\n");
 			fw.append("\t\tfloat tp = truePositives[l];\n");
 			fw.append("\t\tfloat fn = 1 - tp;\n");
-			fw.append("\t\tfloat cost = (0.5 * fp) + (0.5 * fn);\n");
+			fw.append("\t\tfloat cost = (" + fpWeight + "  * fp) + (" + fnWeight + " * fn);\n");
 			fw.append("\t\tif(cost<minCost){\n");
 				fw.append("\t\tminCost = cost;\n");
 				fw.append("\t\tbestThreshold = endInterval - l*interval;\n");
@@ -496,10 +496,11 @@ public class GenerateSRRocCVCpp {
 	 * @param p
 	 * @throws IOException
 	 */
-	public void generateCode(int numberOfIndividuals, String dataset,int numberOfLines, int numberOfVars, int numberOfResults,int numberOfThreads) throws IOException {
+	public void generateCode(int numberOfIndividuals, String dataset,int numberOfLines, int numberOfVars, int numberOfResults,
+                int numberOfThreads,float fpWeight,float fnWeight,int numLambdas) throws IOException {
 		generateHeaders(numberOfIndividuals, numberOfLines, numberOfVars, numberOfResults);
 		for (int i = 0; i < numberOfIndividuals; i++) {
-			generateFunctionIndividualScaled(i);
+			generateFunctionIndividualScaled(i,fpWeight,fnWeight,numLambdas);
 		}
 		generateThreads(numberOfIndividuals, numberOfThreads);
 		generateMain(numberOfThreads);

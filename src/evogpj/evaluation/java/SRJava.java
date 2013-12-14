@@ -87,12 +87,12 @@ public class SRJava extends FitnessFunction {
         this.data = aData;
         int power = Parameters.Defaults.MEAN_POW;
         if (props.containsKey(Parameters.Names.MEAN_POW))
-                power = Integer.valueOf(props.getProperty(Parameters.Names.MEAN_POW));
+            power = Integer.valueOf(props.getProperty(Parameters.Names.MEAN_POW));
         MEAN_FUNC = getMeanFromP(power);
         if (props.containsKey(Parameters.Names.COERCE_TO_INT))
-                USE_INT = Boolean.valueOf(props.getProperty(Parameters.Names.COERCE_TO_INT));
+            USE_INT = Boolean.valueOf(props.getProperty(Parameters.Names.COERCE_TO_INT));
         else
-                USE_INT = Parameters.Defaults.COERCE_TO_INT;
+            USE_INT = Parameters.Defaults.COERCE_TO_INT;
     }
 
     /**
