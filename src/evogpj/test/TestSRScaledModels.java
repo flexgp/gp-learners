@@ -66,7 +66,7 @@ public class TestSRScaledModels {
     }
 
     
-    public void readScaledModels(String filePath) throws IOException, ClassNotFoundException{
+    private void readScaledModels(String filePath) throws IOException, ClassNotFoundException{
         models = new Population();
         ArrayList<String> alModels = new ArrayList<String>();
         Scanner sc = new Scanner(new FileReader(filePath));

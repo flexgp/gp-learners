@@ -18,7 +18,6 @@
 package evogpj.evaluation.cpp;
 
 import evogpj.evaluation.Expression;
-import evogpj.evaluation.cpp.GenerateSRCpp;
 import evogpj.evaluation.ParseExpression;
 import evogpj.genotype.Tree;
 import evogpj.gp.Individual;
@@ -142,7 +141,7 @@ public class SRCpp extends FitnessFunction {
 		for (int i = 0; i < numberOfIndividuals; i++) {
 			Individual ind = pop.get(i);
 			double fitnessAux = (double) fitnessArrayList.get(i);
-			ind.setFitness(this.FITNESS_KEY, fitnessAux);
+			ind.setFitness(SRCpp.FITNESS_KEY, fitnessAux);
 		}
 
 	}

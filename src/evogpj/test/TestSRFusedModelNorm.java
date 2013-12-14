@@ -81,7 +81,7 @@ public class TestSRFusedModelNorm{
         mse = 0;
     }
 
-    public void readFusedModel(String filePath) throws IOException, ClassNotFoundException{
+    private void readFusedModel(String filePath) throws IOException, ClassNotFoundException{
         models = new Population();
         ArrayList<String> alModels = new ArrayList<String>();
         Scanner sc = new Scanner(new FileReader(filePath));
@@ -118,7 +118,7 @@ public class TestSRFusedModelNorm{
 
     }
 
-    public void readBoundsTrain(String boundPath) throws FileNotFoundException{
+    private void readBoundsTrain(String boundPath) throws FileNotFoundException{
         Scanner sc = new Scanner(new FileReader(boundPath));
         for(int i=0;i<data.getNumberOfFeatures();i++){
             sc.nextLine();
@@ -129,7 +129,7 @@ public class TestSRFusedModelNorm{
         maxTargetTr = Double.valueOf(values[1]);
     }
     
-    public void readBoundsTest(String boundPath) throws FileNotFoundException{
+    private void readBoundsTest(String boundPath) throws FileNotFoundException{
         Scanner sc = new Scanner(new FileReader(boundPath));
         for(int i=0;i<data.getNumberOfFeatures();i++){
             sc.nextLine();

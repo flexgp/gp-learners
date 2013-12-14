@@ -17,7 +17,6 @@
  */
 package evogpj.evaluation.java;
 
-import evogpj.evaluation.java.AbstractModelScaler;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +57,7 @@ public class SRModelScalerJava extends AbstractModelScaler {
 	 * @param model
 	 * @return
 	 */
+        @Override
 	public void scaleModel(Individual individual) {
 		// first calculate the mean value of the unscaled output variable from the data, if we don't already have it
 		double actualMean = data.getTargetMean();

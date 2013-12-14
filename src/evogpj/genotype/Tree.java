@@ -175,7 +175,6 @@ public class Tree extends Genotype {
             Function f = r.generate();
             return f;
         } catch (GPException e) {
-            e.printStackTrace();
             System.exit(-1);
         }
         return null;
@@ -194,7 +193,6 @@ public class Tree extends Genotype {
             BooleanFunction f = r.generateBoolean();
             return f;
         } catch (GPException e) {
-            e.printStackTrace();
             System.exit(-1);
         }
         return null;

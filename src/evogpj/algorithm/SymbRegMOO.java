@@ -39,7 +39,6 @@ import evogpj.gp.Population;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -265,7 +264,7 @@ public class SymbRegMOO {
      * 
      * @see Parameters
      */
-    protected void loadParams(Properties props) {
+    private void loadParams(Properties props) {
         if (props.containsKey(Parameters.Names.SEED))
             SEED = Long.valueOf(props.getProperty(Parameters.Names.SEED)).longValue();
         if (props.containsKey(Parameters.Names.EXTERNAL_THREADS))
@@ -297,14 +296,12 @@ public class SymbRegMOO {
         if (props.containsKey(Parameters.Names.FUNCTION_SET)) {
             String funcs[] = props.getProperty(Parameters.Names.FUNCTION_SET).split(" ");
             FUNC_SET = new ArrayList<String>();
-            for (int i = 0; i < funcs.length; i++)
-                    FUNC_SET.add(funcs[i]);
+            FUNC_SET.addAll(Arrays.asList(funcs));
         }
         if (props.containsKey(Parameters.Names.UNARY_FUNCTION_SET)) {
             String funcs[] = props.getProperty(Parameters.Names.UNARY_FUNCTION_SET).split(" ");
             UNARY_FUNC_SET = new ArrayList<String>();
-            for (int i = 0; i < funcs.length; i++)
-                UNARY_FUNC_SET.add(funcs[i]);
+            UNARY_FUNC_SET.addAll(Arrays.asList(funcs));
         }
         if (props.containsKey(Parameters.Names.TERMINAL_SET)) {
             String term = props.getProperty(Parameters.Names.TERMINAL_SET);
@@ -315,8 +312,7 @@ public class SymbRegMOO {
             } else {
                 String terms[] = term.split(" ");
                 TERM_SET = new ArrayList<String>();
-                for (int i = 0; i < terms.length; i++)
-                        TERM_SET.add(terms[i]);
+                TERM_SET.addAll(Arrays.asList(terms));
             }
         }
         if (props.containsKey(Parameters.Names.MUTATE))
@@ -356,7 +352,7 @@ public class SymbRegMOO {
      * @param seed
      * 
      */
-    protected void create_operators(Properties props, long seed) throws IOException {
+    private void create_operators(Properties props, long seed) throws IOException {
         System.out.println("Running evogpj with seed: " + seed);
         rand = new MersenneTwisterFast(seed);
         fitnessFunctions = splitFitnessOperators(FITNESS);
@@ -376,7 +372,6 @@ public class SymbRegMOO {
                 ed.readAndStoreDataset();
                 int numberOfFeatures = ed.getNumberOfFeatures();
                 int numberOfFitnessCases = ed.getNumberOfFitnessCases();
-                ed = null;
                 // create an external model scaler
                 modelScalerCpp = new SRModelScalerCpp(FUNC_SET, UNARY_FUNC_SET, PROBLEM,numberOfFitnessCases, numberOfFeatures,
                                                         TARGET_NUMBER, EXTERNAL_THREADS, MEAN_POW,COERCE_TO_INT);
@@ -394,7 +389,6 @@ public class SymbRegMOO {
                 ed.readAndStoreDataset();
                 int numberOfFeatures = ed.getNumberOfFeatures();
                 int numberOfFitnessCases = ed.getNumberOfFitnessCases();
-                ed = null;
                 if (TERM_SET == null) {
                     TERM_SET = new ArrayList<String>();
                     for (int i = 0; i < numberOfFeatures; i++){
@@ -454,7 +448,6 @@ public class SymbRegMOO {
         try {
             DominatedCount.countDominated(pop, fitnessFunctions);
         } catch (DominationException e) {
-            e.printStackTrace();
             System.exit(-1);
         }
         // save first front of initial population
@@ -535,7 +528,6 @@ public class SymbRegMOO {
             // for each individual, count number of individuals that dominate it
             DominatedCount.countDominated(totalPop, fitnessFunctions);
         } catch (DominationException e) {
-                e.printStackTrace();
                 System.exit(-1);
         }
         // if crowding tournament selection is enabled, calculate crowding distances
@@ -609,7 +601,6 @@ public class SymbRegMOO {
             try {
                 step();
             } catch (GPException e) {
-                e.printStackTrace();
                 System.exit(-1);
             }
             // print information about this generation
@@ -783,13 +774,11 @@ public class SymbRegMOO {
             try {
                     f = new BufferedReader(new FileReader(propFile));
             } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                     return null;
             }
             try {
                     props.load(f);
             } catch (IOException e) {
-                    e.printStackTrace();
             }
             System.out.println(props.toString());
             return props;
@@ -839,7 +828,6 @@ public class SymbRegMOO {
             printWriter.flush();
             printWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
             System.exit(-1);
         }
     }

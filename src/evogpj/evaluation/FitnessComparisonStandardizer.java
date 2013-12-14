@@ -17,9 +17,7 @@
  */
 package evogpj.evaluation;
 
-import evogpj.evaluation.FitnessFunction;
 import evogpj.gp.Individual;
-
 import java.util.LinkedHashMap;
 
 /**

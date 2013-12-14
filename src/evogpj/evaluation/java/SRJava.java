@@ -82,7 +82,19 @@ public class SRJava extends FitnessFunction {
         MEAN_FUNC = getMeanFromP(pow);
         USE_INT = is_double;
     }
-	
+
+    /**
+     * Set this instance's FITNESS_KEY to FITNESS_KEY_NEW
+     * 
+     * @param data
+     * @param props
+     * @param FITNESS_KEY_SUFFIX
+     */
+    public SRJava(DataJava aData, Properties props,String FITNESS_KEY_NEW) {
+        this(aData, props);
+        this.FITNESS_KEY = FITNESS_KEY_NEW;
+    }
+    
     public SRJava(DataJava aData, Properties props) {
         this.data = aData;
         int power = Parameters.Defaults.MEAN_POW;
@@ -96,21 +108,10 @@ public class SRJava extends FitnessFunction {
     }
 
     /**
-     * Set this instance's FITNESS_KEY to FITNESS_KEY_NEW
-     * 
-     * @param data
-     * @param props
-     * @param FITNESS_KEY_SUFFIX
-     */
-    public SRJava(DataJava aData, Properties props,String FITNESS_KEY_NEW) {
-        this(aData, props);
-        this.FITNESS_KEY = FITNESS_KEY_NEW;
-    }
-
-    /**
      * Should this fitness function be minimized (i.e. mean squared error) or
      * maximized?
      */
+    @Override
     public Boolean isMaximizingFunction() {
         return this.isMaximizingFunction;
     }
@@ -142,7 +143,7 @@ public class SRJava extends FitnessFunction {
      * @see Function
      */
     public void eval(Individual ind) {
-        if (ind.getFitness(this.FITNESS_KEY) != null) {
+        if (ind.getFitness(SRJava.FITNESS_KEY) != null) {
                 return;
         }
         SRPhenotype phenotype = new SRPhenotype();
@@ -181,7 +182,7 @@ public class SRJava extends FitnessFunction {
         }
         Double error = MEAN_FUNC.getMean();
         // Because of scaling and normalization (done automatically by MEAN_FUNC), we ensure that error is always in range [0,1].
-        ind.setFitness(this.FITNESS_KEY, errorToFitness(error));
+        ind.setFitness(SRJava.FITNESS_KEY, errorToFitness(error));
         phenotype_tmp = null;
         func = null;
 }

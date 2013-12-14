@@ -38,36 +38,33 @@ public class CSVDataJava extends ScaledData {
 	 */
 	public CSVDataJava(String csvfile) {
 		super(DataSizeRetreiver.num_fitness_cases(csvfile), DataSizeRetreiver.num_terminals(csvfile));
-		BufferedReader f = null;
+		BufferedReader f;
 		try {
-			f = new BufferedReader(new FileReader(csvfile));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+                    f = new BufferedReader(new FileReader(csvfile));
+                    String[] token;
+                    try {
+                            /**
+                             * Keep track of max/min target values (Vladislavleva suggested) to
+                             * perform approximate scaling.
+                             */
+                            int fitnessCaseIndex = 0;
+                            while (f.ready() && fitnessCaseIndex < numberOfFitnessCases) {
+                                    token = f.readLine().split(",");
+                                    for (int i = 0; i < token.length - 1; i++) {
+                                            this.fitnessCases[fitnessCaseIndex][i] = Double.valueOf(token[i]);
+                                            if(fitnessCases[fitnessCaseIndex][i] < minFeatures[i]) minFeatures[i] = fitnessCases[fitnessCaseIndex][i];
+                                            if(fitnessCases[fitnessCaseIndex][i] > maxFeatures[i]) maxFeatures[i] = fitnessCases[fitnessCaseIndex][i];
+                                    }
+                                    Double val = Double.valueOf(token[token.length - 1]);
+                                    addTargetValue(val, fitnessCaseIndex);
+                                    fitnessCaseIndex++;
+                            }
+                            this.scaleTarget();
+                    } catch (NumberFormatException e) {
+                    } catch (IOException e) {
+                    }
+                } catch (FileNotFoundException e) {
 			System.exit(-1);
-		}
-		String[] token;
-		try {
-			/**
-			 * Keep track of max/min target values (Vladislavleva suggested) to
-			 * perform approximate scaling.
-			 */
-			int fitnessCaseIndex = 0;
-			while (f.ready() && fitnessCaseIndex < numberOfFitnessCases) {
-				token = f.readLine().split(",");
-				for (int i = 0; i < token.length - 1; i++) {
-                                        this.fitnessCases[fitnessCaseIndex][i] = Double.valueOf(token[i]);
-                                        if(fitnessCases[fitnessCaseIndex][i] < minFeatures[i]) minFeatures[i] = fitnessCases[fitnessCaseIndex][i];
-                                        if(fitnessCases[fitnessCaseIndex][i] > maxFeatures[i]) maxFeatures[i] = fitnessCases[fitnessCaseIndex][i];
-				}
-				Double val = Double.valueOf(token[token.length - 1]);
-				addTargetValue(val, fitnessCaseIndex);
-				fitnessCaseIndex++;
-			}
-			this.scaleTarget();
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

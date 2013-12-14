@@ -74,10 +74,8 @@ public class Population extends ArrayList<Individual> implements Serializable {
 			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
 			return (Population) ois.readObject();
 		} catch (IOException e) {
-			e.printStackTrace();
 			System.exit(-1);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 			System.exit(-1);
 		}
 		return null;
@@ -193,6 +191,7 @@ public class Population extends ArrayList<Individual> implements Serializable {
 		}
 		
 		//@Override
+                @Override
 		public int compare(Individual a, Individual b) {
 			double aCVF = a.getCrossValFitness();
 			double bCVF = b.getCrossValFitness();

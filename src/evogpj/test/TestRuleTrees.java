@@ -68,7 +68,7 @@ public class TestRuleTrees {
     }
 
     
-    public void readRuleTrees(String filePath) throws IOException, ClassNotFoundException{
+    private void readRuleTrees(String filePath) throws IOException, ClassNotFoundException{
         models = new Population();
         ArrayList<String> alModels = new ArrayList<String>();
         Scanner sc = new Scanner(new FileReader(filePath));
@@ -82,7 +82,7 @@ public class TestRuleTrees {
         }
     }
   
-   public void readConditions(String conditionsPath) throws IOException, ClassNotFoundException{
+   private void readConditions(String conditionsPath) throws IOException, ClassNotFoundException{
         intervals = new ArrayList<Interval>();
         Scanner sc = new Scanner(new FileReader(conditionsPath));
         while(sc.hasNextLine()){

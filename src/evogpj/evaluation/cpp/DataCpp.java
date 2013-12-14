@@ -17,7 +17,6 @@
  */
 package evogpj.evaluation.cpp;
 
-import evogpj.evaluation.cpp.GenerateReadDataCpp;
 import evogpj.evaluation.DataSizeRetreiver;
 
 /**

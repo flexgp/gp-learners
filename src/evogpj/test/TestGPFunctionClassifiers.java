@@ -23,16 +23,11 @@ import evogpj.genotype.Tree;
 import evogpj.genotype.TreeGenerator;
 import evogpj.gp.Individual;
 import evogpj.gp.Population;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import evogpj.math.Function;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
@@ -64,7 +59,7 @@ public class TestGPFunctionClassifiers {
     }
 
     
-    public void readGPFunctionClassifiers(String filePath) throws IOException, ClassNotFoundException{
+    private void readGPFunctionClassifiers(String filePath) throws IOException, ClassNotFoundException{
         models = new Population();
         Scanner sc = new Scanner(new FileReader(filePath));
         while(sc.hasNextLine()){

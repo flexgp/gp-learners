@@ -38,9 +38,9 @@ public class GPFunctionMenuManager {
     
     public void parseGPFunctionTrain(String args[]) throws IOException{
         String dataPath,cvDataPath;
-        int numMinutes=0;
-        String propsFile = "";
-        ClassGPFunction gpfunction = null;
+        int numMinutes;
+        String propsFile;
+        ClassGPFunction gpfunction;
         if(args.length==6 || args.length==8 || args.length==9 || args.length==10){
             dataPath = args[1];
             // run evogpj with standard properties

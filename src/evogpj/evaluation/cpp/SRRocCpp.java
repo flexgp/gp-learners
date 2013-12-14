@@ -30,7 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import evogpj.algorithm.Parameters;
-import evogpj.evaluation.cpp.GenerateSRRocCpp;
 import evogpj.evaluation.FitnessFunction;
 
 /**
@@ -141,7 +140,7 @@ public class SRRocCpp extends FitnessFunction {
 		for (int i = 0; i < numberOfIndividuals; i++) {
 			Individual ind = pop.get(i);
 			double fitnessAux = (double) fitnessArrayList.get(i);
-			ind.setFitness(this.FITNESS_KEY, fitnessAux);
+			ind.setFitness(SRRocCpp.FITNESS_KEY, fitnessAux);
 		}
 
 	}

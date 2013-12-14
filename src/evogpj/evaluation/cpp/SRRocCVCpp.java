@@ -30,7 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import evogpj.algorithm.Parameters;
-import evogpj.evaluation.cpp.GenerateSRRocCVCpp;
 import evogpj.evaluation.FitnessFunction;
 
 /**

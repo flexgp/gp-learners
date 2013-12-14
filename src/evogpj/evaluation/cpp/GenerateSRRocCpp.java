@@ -506,7 +506,6 @@ public class GenerateSRRocCpp {
 			fw.close();
 		} catch (Throwable e) {
 			System.out.println("Error writing cpp file");
-			e.printStackTrace();
 		}
 	}
 
@@ -517,7 +516,6 @@ public class GenerateSRRocCpp {
 			p.waitFor();
 		} catch (Throwable e) {
 			System.out.println("Error compiling cpp file");
-			e.printStackTrace();
 		}
 	}
 
@@ -529,7 +527,6 @@ public class GenerateSRRocCpp {
                     p.waitFor();
 		} catch (Throwable e) {
 			System.out.println("Error running cpp binary");
-			e.printStackTrace();
 		}
 	}
 

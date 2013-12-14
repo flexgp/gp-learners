@@ -32,7 +32,7 @@ public abstract class FitnessFunction {
 	// used to access this fitness function's position in the
 	// gp.Individual.fitnesses HashMap. Each subclass must
 	// define this value
-	public static String FITNESS_KEY;
+	//public static String FITNESS_KEY;
 
 	// should this value be maximized (true) or minimized (false)?
 	// used by non-dominated sort to convert all fitness functions

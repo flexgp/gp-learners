@@ -250,7 +250,7 @@ public class ClassRuleTree {
      * 
      * @see Parameters
      */
-    protected void loadParams(Properties props) {
+    private void loadParams(Properties props) {
         if (props.containsKey(Parameters.Names.SEED))
             SEED = Long.valueOf(props.getProperty(Parameters.Names.SEED)).longValue();
         
@@ -263,8 +263,7 @@ public class ClassRuleTree {
         if (props.containsKey(Parameters.Names.FUNCTION_SET)) {
             String funcs[] = props.getProperty(Parameters.Names.FUNCTION_SET).split(" ");
             FUNC_SET = new ArrayList<String>();
-            for (int i = 0; i < funcs.length; i++)
-                    FUNC_SET.add(funcs[i]);
+            FUNC_SET.addAll(Arrays.asList(funcs));
         }else{
             FUNC_SET = new ArrayList<String>();
             FUNC_SET.add("and");
@@ -274,8 +273,7 @@ public class ClassRuleTree {
         if (props.containsKey(Parameters.Names.UNARY_FUNCTION_SET)) {
             String funcs[] = props.getProperty(Parameters.Names.UNARY_FUNCTION_SET).split(" ");
             UNARY_FUNC_SET = new ArrayList<String>();
-            for (int i = 0; i < funcs.length; i++)
-                UNARY_FUNC_SET.add(funcs[i]);
+            UNARY_FUNC_SET.addAll(Arrays.asList(funcs));
         }
         if (props.containsKey(Parameters.Names.TERMINAL_SET)) {
             String term = props.getProperty(Parameters.Names.TERMINAL_SET);
@@ -284,8 +282,7 @@ public class ClassRuleTree {
             } else {
                 String terms[] = term.split(" ");
                 TERM_SET = new ArrayList<String>();
-                for (int i = 0; i < terms.length; i++)
-                        TERM_SET.add(terms[i]);
+                TERM_SET.addAll(Arrays.asList(terms));
             }
         }
         
@@ -347,7 +344,7 @@ public class ClassRuleTree {
      * @param seed
      * 
      */
-    protected void create_operators(Properties props, long seed) throws IOException {
+    private void create_operators(Properties props, long seed) throws IOException {
         System.out.println("Running evogpj with seed: " + seed);
         rand = new MersenneTwisterFast(seed);
         fitnessFunctions = splitFitnessOperators(FITNESS);
@@ -427,7 +424,6 @@ public class ClassRuleTree {
         try {
             DominatedCount.countDominated(pop, fitnessFunctions);
         } catch (DominationException e) {
-            e.printStackTrace();
             System.exit(-1);
         }
         // save first front of initial population
@@ -508,7 +504,6 @@ public class ClassRuleTree {
             // for each individual, count number of individuals that dominate it
             DominatedCount.countDominated(totalPop, fitnessFunctions);
         } catch (DominationException e) {
-                e.printStackTrace();
                 System.exit(-1);
         }
         // if crowding tournament selection is enabled, calculate crowding distances
@@ -581,7 +576,6 @@ public class ClassRuleTree {
             try {
                 step();
             } catch (GPException e) {
-                e.printStackTrace();
                 System.exit(-1);
             }
             // print information about this generation
@@ -653,13 +647,11 @@ public class ClassRuleTree {
         try {
             f = new BufferedReader(new FileReader(propFile));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             return null;
         }
         try {
             props.load(f);
         } catch (IOException e) {
-            e.printStackTrace();
         }
         System.out.println(props.toString());
         return props;
@@ -709,7 +701,6 @@ public class ClassRuleTree {
             printWriter.flush();
             printWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
             System.exit(-1);
         }
     }

@@ -3,7 +3,6 @@
  * and open the template in the editor.
  */
 package evogpj.evaluation;
-import evogpj.evaluation.Expression;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -52,7 +51,7 @@ public class ParseExpression {
     }
     
     public void getIntermediateFromPrefix(String aPreExpression, String varResult){
-        String operator="";
+        String operator;
         String left = "";
         String right = "";
         String instruction = "";
@@ -167,7 +166,7 @@ public class ParseExpression {
     }
     
     public String getInfixFromPrefix(String aPreExpression) {
-        String operator="";
+        String operator;
         String left = "";
         String right = "";
         String infix = "";

@@ -70,6 +70,11 @@ public class SRModelScalerCpp extends AbstractModelScaler {
 		numberOfThreads = aNumberOfThreads;
 	}
 
+        /**
+         *
+         * @param individual
+         */
+        @Override
 	public void scaleModel(Individual individual) {
 		Population singleton = new Population();
 		singleton.add(individual);

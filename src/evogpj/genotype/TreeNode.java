@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import evogpj.math.Function;
 
@@ -124,10 +123,9 @@ public class TreeNode implements Serializable {
 	public String toStringAsInfix() {
 		try {
 			Class<? extends Function> c = Function.getClassFromLabel(label);
-			Method method = null;
-			method = c.getMethod("getInfixFormatString", new Class<?>[] {});
+			Method method = c.getMethod("getInfixFormatString", new Class<?>[] {});
 			String infixFormatString = (String) method.invoke(null);
-			if (children.size() == 0) { // this is a terminal (const or var)
+			if (children.isEmpty()) { // this is a terminal (const or var)
                                 String aux = String.format(infixFormatString, label);
 				return aux;
 			}
@@ -139,23 +137,18 @@ public class TreeNode implements Serializable {
 			return retval;
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			System.exit(-1);
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			System.exit(-1);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			System.exit(-1);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			System.exit(-1);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			System.exit(-1);
 		}
 		return null;
@@ -314,22 +307,16 @@ public class TreeNode implements Serializable {
 			}
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		throw new GPException("can't create function for node " + this.label);
 	}
@@ -358,22 +345,16 @@ public class TreeNode implements Serializable {
             }
         } catch (SecurityException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (NoSuchMethodException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (InvocationTargetException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         throw new GPException("can't create function for node " + this.label);
     }        

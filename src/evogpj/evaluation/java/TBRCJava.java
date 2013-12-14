@@ -107,7 +107,7 @@ public class TBRCJava extends FitnessFunction {
         double falsePositiveRate = numFalsePositives / numNegatives;
         double falseNegativeRate = numFalseNegatives / numPositives;
         Double error = wFP*falsePositiveRate + wFN*falseNegativeRate;
-        ind.setFitness(this.FITNESS_KEY, error);
+        ind.setFitness(TBRCJava.FITNESS_KEY, error);
         func = null;
     }
 

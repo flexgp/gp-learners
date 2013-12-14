@@ -27,24 +27,24 @@ public class RuleTreeMenuManager {
         System.err.println("USAGE:");
         System.err.println();
         System.err.println("TRAIN:");
-        System.err.println("java -jar sr.jar -train path_to_data -min minutes [-properties path_to_properties]");
+        System.err.println("java -jar sr.jar -train path_to_data -minutes minutes [-properties path_to_properties]");
         System.err.println();
         System.err.println("TEST:");
-        System.err.println("java -jar sr.jar -test path_to_data -cond path_to_conditions");
+        System.err.println("java -jar sr.jar -test path_to_data -conditions path_to_conditions");
         System.err.println();
     }
     
     public void parseRuleTreeTrain(String args[]) throws IOException{
         String dataPath, propsFile;
         int numMinutes;
-        ClassRuleTree ruleTree = null;
+        ClassRuleTree ruleTree;
         if(args.length==4 || args.length==6){
             dataPath = args[1];
             // run evogpj with standard properties
             Properties props = new Properties();
             props.put(Parameters.Names.PROBLEM, dataPath);
             props.put(Parameters.Names.FITNESS, "fitness.TBRCFitness.Java, fitness.SubtreeComplexity");
-            if (args[2].equals("-min")) {
+            if (args[2].equals("-minutes")) {
                 numMinutes = Integer.valueOf(args[3]);
                 if(args.length==4){
                     ruleTree = new ClassRuleTree(props,numMinutes*60);
@@ -79,7 +79,7 @@ public class RuleTreeMenuManager {
         if (args.length==4){
             // by default integer targets = false
             dataPath = args[1];
-            if(args[2].equals("-cond")){
+            if(args[2].equals("-conditions")){
                 conditionsPath = args[3];
                 // check if knee model exists
                 popPath = "knee.txt";

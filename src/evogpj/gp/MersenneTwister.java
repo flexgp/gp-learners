@@ -199,6 +199,7 @@ public strictfp class MersenneTwister extends java.util.Random implements Serial
     private boolean __haveNextNextGaussian;
 
     /* We're overriding all internal data, to my knowledge, so this should be okay */
+    @Override
     public Object clone()
         {
         try

@@ -200,7 +200,6 @@ public class TreeGenerator {
 				parent.addChild(newNode);
 			}
 		}
-		return;
 	}
 
 }

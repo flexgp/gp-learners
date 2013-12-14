@@ -35,7 +35,7 @@ public abstract class Mean {
 	 * A running mean object, with methods for updating and computing the mean.
 	 */
 	public Mean() {
-		reset();
+            reset();
 	}
 
 	/**

@@ -17,7 +17,6 @@
  */
 package evogpj.evaluation.java;
 
-import evogpj.gp.Individual;
 import evogpj.math.means.ArithmeticMean;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -99,6 +98,7 @@ public abstract class ScaledData implements DataJava {
 		}
 	}
 
+        @Override
 	public Double getTargetMean() {
 		return this.targetMean.getMean();
 	}

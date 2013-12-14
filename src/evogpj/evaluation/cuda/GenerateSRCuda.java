@@ -706,7 +706,7 @@ public class GenerateSRCuda{
         try{
             FileWriter fwIndividuals;
             fwIndividuals = new FileWriter(fileName);
-            int sizeAux = 0;
+            int sizeAux;
             for(int i=0;i<expressions.length;i++){
                 sizeAux=0;
                 for(int j=0;j<expressions[i].getAlCodedRpn().size();j++){

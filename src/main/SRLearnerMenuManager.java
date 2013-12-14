@@ -55,10 +55,10 @@ public class SRLearnerMenuManager {
     }
     
     public void parseSymbolicRegressionTrain(String args[]) throws IOException{
-        String dataPath = "";
+        String dataPath;
         int numMinutes=0;
         String propsFile = "";
-        SymbRegMOO srEvoGPj = null;
+        SymbRegMOO srEvoGPj;
         if(args.length==4 || args.length==6 || args.length==7 || args.length==8){
             dataPath = args[1];
             // run evogpj with standard properties

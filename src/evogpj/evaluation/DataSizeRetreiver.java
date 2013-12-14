@@ -51,7 +51,6 @@ public class DataSizeRetreiver {
 			System.err.println(String.format("Error: file %s not found.", filepath));
 			System.exit(-1);
 		} catch (IOException e) {
-			e.printStackTrace();
 			System.exit(-1);
 		}
 		return -1;
@@ -68,7 +67,7 @@ public class DataSizeRetreiver {
 			try {
 				byte[] c = new byte[1024];
 				int count = 0;
-				int readChars = 0;
+				int readChars;
 				boolean empty = true;
 				while ((readChars = is.read(c)) != -1) {
 					empty = false;
@@ -86,7 +85,6 @@ public class DataSizeRetreiver {
 			System.err.println(String.format("Error: file %s not found.", filepath));
 			System.exit(-1);
 		} catch (IOException e) {
-			e.printStackTrace();
 			System.exit(-1);
 		}
 		return -1;

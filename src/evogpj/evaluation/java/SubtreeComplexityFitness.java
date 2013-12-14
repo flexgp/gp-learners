@@ -41,6 +41,7 @@ public class SubtreeComplexityFitness extends FitnessFunction {
 	 * Should this fitness function be minimized (i.e. mean squared error) or
 	 * maximized?
 	 */
+        @Override
 	public Boolean isMaximizingFunction() {
 		return this.isMaximizingFunction;
 	}

@@ -148,7 +148,7 @@ public class SRRocCuda extends FitnessFunction {
             for(int i=0;i<numberOfIndividuals;i++){
                 Individual ind = pop.get(i);
                 double fitnessAux = (double)fitnessArrayList.get(i);
-                ind.setFitness(this.FITNESS_KEY,fitnessAux);
+                ind.setFitness(SRRocCuda.FITNESS_KEY,fitnessAux);
             }
 
         }

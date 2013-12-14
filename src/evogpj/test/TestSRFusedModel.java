@@ -67,7 +67,7 @@ public class TestSRFusedModel{
         mse = 0;
     }
 
-    public void readFusedModel(String filePath) throws IOException, ClassNotFoundException{
+    private void readFusedModel(String filePath) throws IOException, ClassNotFoundException{
         models = new Population();
         ArrayList<String> alModels = new ArrayList<String>();
         Scanner sc = new Scanner(new FileReader(filePath));

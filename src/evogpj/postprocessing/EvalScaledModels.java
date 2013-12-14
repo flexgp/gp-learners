@@ -18,7 +18,6 @@
 package evogpj.postprocessing;
 
 import evogpj.evaluation.java.DataJava;
-import evogpj.evaluation.FitnessFunction;
 import evogpj.genotype.Tree;
 import evogpj.gp.Individual;
 import evogpj.gp.Population;
