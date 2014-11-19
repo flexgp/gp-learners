@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Rule tree learner</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1><a href="index.html">FlexGP Project</a></h1>
+        <p>Learners</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/flexgp" class="button fork"><strong>View On GitHub</strong></a>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>
+<a name="flexgp-machine-learning-with-genetic-programming" class="anchor" 
+href="#flexgp-machine-learning-with-genetic-programming"><span class="octicon 
+octicon-link"></span></a>Rule Tree learner</h1>
+
+<p>Current release provides functionality both for performing Binary Classification on numerical datasets and 
+for testing the retrieved classifiers. In this page we provide a quick tutorial on how to get started with the
+ Rule Tree learner.</p>
+
+<h1>
+<a name="tutorial" class="anchor" href="#tutorial"><span class="octicon octicon-link"></span></a>Tutorial</h1>
+
+<p>Note: this release is only supported for Linux Debian platforms.</p>
+
+<h2>
+<a name="step-2-data-format" class="anchor" href="#step-2-data-format"><span class="octicon 
+octicon-link"></span></a>Step 1: Data format</h2>
+
+<p>Data must be provided in csv format where each line corresponds to an exemplar and the 0 or 1 class labels are placed 
+in the last column. Note that any additional line or column containing nominal values or labels needs to be removed.</p>
+
+<h2>
+<a name="step-1-download-the-rtlearner-file-from-here" class="anchor" 
+href="#step-1-download-the-rtlearner-file-from-here"><span class="octicon 
+octicon-link"></span></a>Step 2: Download ruletree.jar file from here.
+</h2>
+
+<h2>
+<a name="step-3-running-flexgp" class="anchor" href="#step-3-running-flexgp"><span class="octicon 
+octicon-link"></span></a>Step 3: Running Rule Tree</h2>
+
+<p>In the current release, it is only possible to run the Rule Tree learner directly from your terminal (a Matlab
+ wrapper will be included soon).</p>
+
+<h3>
+<a name="running-flexgp-from-the-terminal" class="anchor" href="#running-ruletree-from-the-terminal"><span 
+class="octicon octicon-link"></span></a>Running Rule Tree learner from the terminal</h3>
+
+<h4>
+<a name="model-the-data" class="anchor" href="#model-the-data"><span class="octicon octicon-link"></span></a>Obtaining
+a binary classifier</h4>
+
+<p>All you need to provide is the path to your dataset and the optimization time</p>
+
+<pre><code>$ java -jar ruletree.jar -train path_to_your_data -minutes 10
+</code></pre>
+
+<p>In a first step, the Rule Tree learner will divide the range of observed values of each variable into intervals.
+ These intervals are reported in the file conditions.txt and will be used by the learner to construct boolean
+ expressions. Note that current release only supports the following functions:</p>
+ 
+<pre><code>function_set = and or no
+</code></pre>
+
+<p>At the end of the run a set of files are generated:</p>
+
+<ol>
+<li><p><strong>pareto.txt</strong>: models forming the Pareto Front (accuracy vs model complexity).</p></li>
+<li><p><strong>leastComplex.txt</strong>: least complex model of the Pareto Front.</p></li>
+<li><p><strong>mostAccurate.txt</strong>: most accurate model of the Pareto Front.</p></li>
+<li><p><strong>knee.txt</strong>: model at the knee of the Pareto Front.</p></li>
+<li><p><strong>bestModelGeneration.txt</strong>: most accurate model per generation.</p></li>
+</ol>
+
+<h4>
+<a name="test-the-models" class="anchor" href="#test-the-models"><span class="octicon octicon-link"></span></a>Test 
+the classifiers</h4>
+
+<p>The ruleTree learner provides functionality to obtain the accuracy, precision, recall, F-score, false positive rate,
+and false negative rate of the retrieved classfiers once the training is finished. To automatically test all the
+generated classifiers, type:</p>
+
+<pre><code>$ cd run_folder
+$ java -jar ruletree.jar -test path_data -conditions path_conditions
+</code></pre>
+
+
+<h3>
+<a name="running-flexgp-from-matlab" class="anchor" href="#running-flexgp-from-matlab"><span class="octicon octicon-link"></span></a>Running SR learner from Matlab</h3>
+
+<p>To be done</p>
+
+
+<h1>
+<a name="bellsandwhistles" class="anchor" href="#tutorial"><span class="octicon 
+octicon-link"></span></a>Bells and whistles</h1>
+
+<h2>
+<a name="step-4-speeding-up-your-runs-with-c-optimized-execution" class="anchor" 
+href="#step-4-speeding-up-your-runs-with-c-optimized-execution"><span class="octicon 
+octicon-link"></span></a>Change the default parameters</h2>
+
+<p>To modify the default parameters of the Rule Tree learner, it is necessary to append the flag
+ <em>-properties</em> followed by the path of the properties file containing the desired parameters:
+ 
+<pre><code>$ java -jar ruletree.jar -train path_to_your_data -minutes 10 -properties path_to_props_file
+</code></pre>
+ 
+<p>The following properties file example specifies the population size, the features that will be
+ considered during the learning process, the functions employed to generate GP trees, the tournament selection size,
+ and the mutation rate.</p>
+ 
+<pre><code>pop_size = 2000
+function_set = or not
+tourney_size = 10
+mutation_rate = 0.1
+</code></pre>
+
+
+<h1>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h1>
+
+<p>To check reports visit our blog:
+<a href="blog.html">FlexGP Blog</a></p>
+
+<h1>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h1>
+
+<p>This project is maintained by the <a href="http://groups.csail.mit.edu/EVO-DesignOpt/groupWebSite/">Any-Scale Learning For All (ALFA)</a> group at MIT.
+<img src="images/ALFA-logo-lousy.png" alt="ALFA"></p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>	
+  </body>
+</html>
