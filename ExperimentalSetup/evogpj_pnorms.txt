@@ -1,5 +1,0 @@
-fitness_mean_pow = -1
-fitness_mean_pow = 1
-fitness_mean_pow = 2
-fitness_mean_pow = 3
-fitness_mean_pow = 4
