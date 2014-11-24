@@ -15,8 +15,14 @@
 
       <header>
         <h1><a href="index.html">FlexGP Project</a></h1>
-        <p>SR learner</p>
+        <p>Learners</p>
       </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/flexgp" class="button fork"><strong>View On GitHub</strong></a>
+      </div><!-- end banner -->
 
     <div class="wrapper">
       <nav>
