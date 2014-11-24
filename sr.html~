@@ -45,7 +45,8 @@ in the last column. Note that any additional line or column containing labels or
 
 <h2><a name="step-1-download-the-flexgpjar-file-from-here" class="anchor" 
 href="#step-1-download-the-flexgpjar-file-from-here"><span class="octicon 
-octicon-link"></span></a>Step 2: Download the sr.jar file from <a href="downloads/sr.jar">here</a></h2>
+octicon-link"></span></a>Step 2: Download the sr.jar file from <a href="downloads/sr.jar">here</a>
+</h2>
 
 <h2><a name="step-3-running-flexgp" class="anchor" href="#step-3-running-flexgp"><span class="octicon 
 octicon-link"></span></a>Step 3 (optional): Normalize the data</h2>
