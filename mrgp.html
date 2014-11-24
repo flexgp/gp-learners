@@ -15,14 +15,8 @@
 
       <header>
         <h1><a href="index.html">FlexGP Project</a></h1>
-        <p>Learners</p>
+        <p>MRGP learner</p>
       </header>
-
-      <div id="banner">
-        <span id="logo"></span>
-
-        <a href="https://github.com/flexgp" class="button fork"><strong>View On GitHub</strong></a>
-      </div>
 
     <div class="wrapper">
       <nav>
@@ -107,12 +101,11 @@ the data</h4>
 <h4><a name="test-the-models" class="anchor" href="#test-the-models"><span class="octicon octicon-link"></span></a>Test 
 the models</h4>
 
-<p>The GP Function learner provides functionality to obtain the accuracy, precision, recall, F-score, false positive rate,
-and false negative rate of the retrieved classfiers once the training is finished. To automatically test all the
-generated classifiers, type:</p>
+<p>The MRGP learner provides functionality to obtain the MSE and MAE of the retrieved models once the training is finished. 
+To automatically test all the generated classifiers, type:</p>
 
 <pre><code>$ cd run_folder
-$ java -jar gpfunction.jar -test path_to_test_data
+$ java -jar mrgp.jar -test path_to_test_data
 </code></pre>
 
 
@@ -124,35 +117,27 @@ octicon-link"></span></a>Bells and whistles</h1>
 <h2>
 <a name="step-4-speeding-up-your-runs-with-c-optimized-execution" class="anchor" 
 href="#step-4-speeding-up-your-runs-with-c-optimized-execution"><span class="octicon 
-octicon-link"></span></a>1) Specify the number of CPU threads</h2>
+octicon-link"></span></a>Change the default parameters</h2>
 
-<p>To speedup the training process, append the <em>-cpp</em> flag followed by the number of CPU threads that will be employed 
- to evaluate the candidate solutions (4 in the example below):
- 
-<pre><code>$ java -jar gpfunction.jar -train path_to_train_data -cv path_to_cv_data -minutes 10 -cpp 4
-</code></pre>
-
-<h2>
-<a name="step-4-speeding-up-your-runs-with-c-optimized-execution" class="anchor" 
-href="#step-4-speeding-up-your-runs-with-c-optimized-execution"><span class="octicon 
-octicon-link"></span></a>2) Change the default parameters</h2>
-
-<p>To modify the default parameters of the GP Function learner, it is necessary to append the flag 
+<p>To modify the default parameters of the MRGP learner, it is necessary to append the flag 
  <em>-properties</em> followed by the path of the properties file containing the desired parameters:
  
-<pre><code>$ java -jar gpfunction.jar -train path_to_train_data -cv path_to_cv_data -minutes 10 -cpp 4 -properties path_to_props_file
+<pre><code>$ java -jar mrgp.jar -train path_to_train_data -minutes 10 -properties path_to_props_file
 </code></pre>
  
-The following properties file example specifies the population size, the features that will be
+The following properties file example specifies the number of threads, the population size, the features that will be
  considered during the learning process, the functions employed to generate GP trees, the tournament selection size,
  and the mutation rate.
  
-<pre><code>pop_size = 1000
-terminal_set = X1 X3 X7 X8 X9 X12 X13 X17
-function_set = + - * mydivide exp mylog sqrt square cube quart sin cos
+<pre><code>external_threads = 8
+pop_size = 100
+terminal_set = X1 X3 X4
+function_set = + - * mydivide exp sin cos
 tourney_size = 10
 mutation_rate = 0.1
 </code></pre>
+
+
 
 <h1>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h1>
