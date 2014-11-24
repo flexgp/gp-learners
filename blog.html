@@ -500,6 +500,79 @@ FALSE NEGATIVE RATE: 0.05370457192117482
 
 
 <h1>
+<a name="tutorial" class="anchor" href="#tutorial"><span class="octicon 
+octicon-link"></span></a>Multiple Regression Genetic Programming Learner: Predicting the quality of wine</h1>
+
+<p>The Wine Quality dataset is available at the <a href="http://archive.ics.uci.edu/ml/datasets/Wine+Quality">UCI 
+Machine Learning repository website</a>. This problem consists in modeling the quality (a grade from 1 to 10) of a 
+given red or white wine given 11 features such as acidity, alcohol degree etc. As for the SR learner, we format the data:</p>
+
+<pre><code>$ cd path_to_redWine_folder
+$ sed 1d original_data > new_data
+$ sed -i 's/;/,/g' new_data
+</code></pre>
+
+<p>Afer the data is properly formatted, we run the SR learner:</p>
+
+<pre><code>$ cd path_to_redWine_folder
+$ java -jar mrgp.jar -train path_to_redWine_data -minutes 5
+$ cd path_to_whiteWine_folder
+$ java -jar mrgp.jar -train path_to_whiteWine_data -minutes 5 
+</code></pre>
+
+<p>We first take a look at the retrieved models. The knee model retrieved for the red wine dataset is shown below:</p>
+
+<pre><code>$ cd path_to_redWine_folder
+$ less knee.txt
+</code></pre>
+
+<pre><code>$ 3.0,9.0,-0.018684985640165904 0.7856738123404483 0.0 0.404478545644783 -0.2563039645099639 -4.280925552801179 -0.7488644748880113 2.148886734420814 -1.520366967573291 0.0 0.005112032510469252 0.0 0.0 -1.1578273566729859E-4 -0.05863301877797394 1.1171743703547572 -0.04053217931007253 5.2359729196524355E-5 -0.1601368617645158 0.25813312172125863 -0.44588645508144964 -0.026404070416446022 6.1059026099287436E-6 2.3404728567991634E-6 -4.857116759242476E-8,-1.7954608089032638,(- (square (mylog X6)) (* (+ X10 (mylog (mydivide (sin X2) X1))) (mydivide (cos (sqrt X11)) (mydivide (sqrt (square (* (sin X2) X11))) (exp X4)))))
+</code></pre>
+
+<p>The model files contain:</p>
+<ol>
+<li><p>The minimum target value seen in the training set,</p></li>
+<li><p>the maximum target value seen in the training set,</p></li>
+<li><p>the weights associated to the MRGP model,</p></li>
+<li><p>the intercept of the model,</p></li>
+<li><p>the prefix representation of the expression tree.</p></li>
+</ol>
+
+<p>We now test the most accurate and knee models obtained for the two datasets:</p>
+
+<pre><code>$ cd path_to_redWine_folder
+</code></pre>
+
+<pre><code>$ java -jar mrgp.jar -test path_to_redWine_data -integer true -scaled mostAccurate.txt
+(cos (cube (+ (exp (cube (* (square (cos (sqrt X11))) (quart (sin (* (+ (exp (cube (* (square (cos (sqrt X11))) (quart (sin (+ X11 (- (sin (+ X2 (mylog X11))) (square (exp X10))))))))) (cos (+ (mydivide (mydivide (cos (square (* (exp X10) (sin (* X10 X2))))) (sin X1)) (+ (- (+ (cos (cos (sqrt X10))) (+ X2 (+ (sqrt (mylog (mydivide X2 X9))) X10))) (mydivide X7 X2)) (sqrt (mylog (mydivide X10 X9))))) (cos (sqrt (* X11 (square X8))))))) X2)))))) (cos (+ (mydivide (mydivide (cos (square (* (exp X10) (sin (* X10 X2))))) (sin X1)) (+ (- (+ (cos (cos (sqrt X10))) (+ (+ (exp (+ (exp (cube (* (square (cos (sqrt X11))) (quart (sin (* X10 X2)))))) (cos (+ (mydivide X10 (+ (- (+ (cos (cos (sqrt X10))) X3) (mydivide X7 X2)) X9)) (cos (sqrt (* (* (square X11) (exp (* (mylog (sin X10)) X1))) X7))))))) (cos (+ (mydivide (mydivide (cos (exp X6)) (sin (square X11))) (+ (- (mylog X7) (mydivide X7 X2)) (sqrt (mylog (mydivide X2 X9))))) (cos (sqrt (* (sqrt X10) (square X8))))))) (+ (sqrt (mylog (mydivide X2 X11))) X10))) (mydivide X7 X2)) (sqrt (mylog (mydivide (quart (cos X11)) X9))))) (cos (sqrt (* X11 (square X8)))))))))
+MSE: 0.42951389259412937
+MAE: 0.49619361751886215
+</code></pre>
+
+<pre><code>$ java -jar mrgp.jar -test path_to_redWine_data -integer true -scaled knee.txt 
+(+ (exp (cube (* (square (cos (sqrt X11))) (quart (sin (* X10 X2)))))) (cos (+ (mydivide X10 (+ (- (+ (cos (cos (sqrt X10))) X3) (mydivide X7 X2)) X9)) (cos (sqrt (* (* (square X11) (exp (* (mylog (sin X10)) X1))) X7))))))
+MSE: 0.37600134359393533
+MAE: 0.4748088882237069
+</code></pre>
+
+
+<pre><code>$ cd path_to_whiteWine_folder
+</code></pre>
+
+<pre><code>$ java -jar mrgp.jar -test path_to_whiteWine_data -integer true -scaled mostAccurate.txt
+(- (square (mylog (mydivide (+ (sin (+ (+ (quart (mydivide (cos (sqrt (+ (- (square X11) X1) (- X5 X1)))) (mydivide (sqrt (sqrt X6)) (exp X4)))) (cube X3)) (mydivide (sin (sqrt X6)) (quart X8)))) (cube (quart X4))) (mylog (sqrt (+ (+ (quart X5) (cube X3)) (mydivide (sin (* (sin (mydivide (* X3 (* (cos X11) (mydivide (mylog (exp X3)) X7))) X11)) X11)) (quart X8)))))))) (* (+ X9 (mylog (mydivide (* (+ X8 (+ (+ (quart X2) (cube X3)) (mydivide (sin (* (sin X2) X11)) (cos (sqrt (+ (- (square X11) X1) X2)))))) (mydivide (cos X11) (mydivide (+ X10 (mylog (mydivide X6 X1))) (exp X4)))) X1))) (mydivide (cos (sqrt X11)) (mydivide (sqrt (square (* (sin X2) X11))) (exp X4)))))
+MSE: 0.5154293445397177
+MAE: 0.5673233538456594
+</code></pre>
+
+<pre><code>$ java -jar mrgp.jar -test path_to_whiteWine_data -integer true -scaled knee.txt 
+(- (square (mylog X6)) (* (+ X10 (mylog (mydivide (sin X2) X1))) (mydivide (cos (sqrt X11)) (mydivide (sqrt (square (* (sin X2) X11))) (exp X4)))))
+MSE: 0.5380295518792321
+MAE: 0.5774873048842515
+</code></pre>
+
+
+<h1>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h1>
 
 <p>This project is maintained by the <a href="http://groups.csail.mit.edu/EVO-DesignOpt/groupWebSite/">Any-Scale Learning For All (ALFA)</a> group at MIT.
