@@ -14,25 +14,40 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
+
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Quart extends OneArgFunction {
 
-	public Quart(Function a1) {
-		super(a1);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     *
+     * @param a1
+     */
+    public Quart(Function a1) {
+        super(a1);
+        // TODO Auto-generated constructor stub
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		return Math.pow(arg.eval(t), 4);
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        return Math.pow(arg.eval(t), 4);
+    }
 
-	public static String getInfixFormatString() {
-            //return "(%s.^4)";
-            return "(quart %s)";
-	}
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "(%s.^4)";
+        return "(quart %s)";
+    }
 }

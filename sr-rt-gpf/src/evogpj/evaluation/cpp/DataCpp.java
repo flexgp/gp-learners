@@ -20,7 +20,7 @@ package evogpj.evaluation.cpp;
 import evogpj.evaluation.DataSizeRetreiver;
 
 /**
- * 
+ * Generates a C program that reads the training data and stores in shared mem
  * @author Ignacio Arnaldo
  */
 public class DataCpp {

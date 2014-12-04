@@ -27,8 +27,8 @@ import java.io.PrintWriter;
  * Class which provides DataJava interface with target values scaled to the range
  * [0, 1]. Using data with this transformation frees GP from having to search
  * for the proper scale, allowing it to focus on just identifying the proper
- * shape. See E. Y. Vladislavleva, â€œModel-based problem solving through symbolic
- * regression via pareto genetic programming,â€ CentER, Tilburg University, 2008.
+ * shape. See E. Y. Vladislavleva, 창��밠odel-based problem solving through symbolic
+ * regression via pareto genetic programming,창���CentER, Tilburg University, 2008.
  * 
  * @author Owen Derby
  */
@@ -138,7 +138,56 @@ public abstract class ScaledData implements DataJava {
         printWriterNormCoeffs.flush();
         printWriterNormCoeffs.close();
     }
-        
+     
+//    /**
+//     * Partitions the given data into subsets according to the class labels.
+//     * Call this after the targets are scaled. (Only for Binary Classification use)
+//     * @return Map of subsets of data
+//     */
+//    public Map<Double,double[][]> partition() {
+//    	Map<Double,double[][]> partitioned = new HashMap<Double,double[][]>();
+//    	
+//    	int numOfNegativeData = 0;
+//    	int numOfPositiveData = 0;
+//    	double negativeLabel = this.target_min;
+//    	double positiveLabel = this.target_max;
+//    	
+//    	for (int i=0;i<numberOfFitnessCases;i++){
+//    		if(this.scaled_target[i]==negativeLabel){
+//    			numOfNegativeData++;
+//    		}else if(this.scaled_target[i]==positiveLabel){
+//    			numOfPositiveData++;
+//    		}else{
+//    			System.err.println("Something is wrong with class label!");
+//    			System.exit(-1);
+//    		}
+//    	}
+//    	
+//    	double[][] negative_class = new double[numOfNegativeData][numberOfFeatures];
+//    	double[][] positive_class = new double[numOfPositiveData][numberOfFeatures];
+//    	
+//    	int indexOfNegative = 0;
+//    	int indexOfPositive = 0;
+//    	
+//    	for(int i=0;i<numberOfFitnessCases;i++){
+//    		if(this.scaled_target[i]==negativeLabel){
+//    			negative_class[indexOfNegative]=this.fitnessCases[i];
+//    			indexOfNegative++;
+//    		}else if(this.scaled_target[i]==positiveLabel){
+//    			positive_class[indexOfPositive]=this.fitnessCases[i];
+//    			indexOfPositive++;
+//    		}else{
+//    			System.err.println("Something is wrong with class label!");
+//    			System.exit(-1);
+//    		}
+//    	}
+//    	
+//    	partitioned.put(negativeLabel,negative_class);
+//    	partitioned.put(positiveLabel,positive_class);
+//    	
+//    	return partitioned;
+//    }
+    
     @Override
     public double[][] getInputValues(){
         return fitnessCases;

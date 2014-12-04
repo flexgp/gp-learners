@@ -14,29 +14,45 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
+
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Divide extends TwoArgFunction {
 
-	public Divide(Function a1, Function a2) {
-		super(a1, a2);
-	}
+    /**
+     *
+     * @param a1
+     * @param a2
+     */
+    public Divide(Function a1, Function a2) {
+        super(a1, a2);
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		Double denom = arg2.eval(t);
-		if (Math.abs(denom) < 1e-6) {
-			return (double) 1; // cc Silva 2008 thesis
-		} else {
-			return arg1.eval(t) / denom;
-		}
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        Double denom = arg2.eval(t);
+        if (Math.abs(denom) < 1e-6) {
+            return (double) 1; // cc Silva 2008 thesis
+        } else {
+            return arg1.eval(t) / denom;
+        }
+    }
 
-	public static String getInfixFormatString() {
-            //return "mydivide(%s, %s)";
-            return "(mydivide %s %s)";
-	}
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "mydivide(%s, %s)";
+        return "(mydivide %s %s)";
+    }
 }

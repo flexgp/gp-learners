@@ -36,7 +36,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Test linearly scaled symbolic regression models
  * 
  * @author Ignacio Arnaldo
  */
@@ -101,6 +101,39 @@ public class TestSRScaledModels {
             models.add(i, iAux);
         }
     }
+    
+    /**
+     * @see Function
+     */
+    public void predictionsPop(String filePath) throws IOException {
+        int indexIndi = 0;
+        for(Individual ind:models){
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filePath + "_" + indexIndi + ".csv"));
+            PrintWriter printWriter = new PrintWriter(bw);
+            Tree genotype = (Tree) ind.getGenotype();
+            Function func = genotype.generate();
+            List<Double> d;
+            double[][] inputValuesAux = data.getInputValues();
+            for (int i = 0; i < data.getNumberOfFitnessCases(); i++) {
+                d = new ArrayList<Double>();
+                for (int j = 0; j < data.getNumberOfFeatures(); j++) {
+                    d.add(j, inputValuesAux[i][j]);
+                }
+                Double val = func.eval(d);
+                double slope = genotype.getScalingSlope();
+                double intercept = genotype.getScalingIntercept();
+                val = (val*slope) + intercept;
+                if(round) val = (double)Math.round(val);
+                printWriter.println(val);
+                d.clear();
+            }
+            printWriter.flush();
+            printWriter.close();
+            func = null;
+            indexIndi++;
+        }
+    }    
+    
     /**
      * @see Function
      */

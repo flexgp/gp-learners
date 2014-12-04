@@ -28,12 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import evogpj.math.Function;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Test fused symbolic regression models
  * 
  * @author Ignacio Arnaldo
  */
@@ -102,6 +105,39 @@ public class TestSRFusedModel{
             models.add(i, iAux);
         }
 
+    }
+    
+    public void predictions(String filePath) throws IOException {
+        List<Double> d;
+        double[][] inputValuesAux = data.getInputValues();
+        BufferedWriter bw = new BufferedWriter(new FileWriter(filePath + ".csv"));
+        PrintWriter printWriter = new PrintWriter(bw);
+        for (int i = 0; i < data.getNumberOfFitnessCases(); i++) {
+            d = new ArrayList<Double>();
+            for (int j = 0; j < data.getNumberOfFeatures(); j++) {
+                    d.add(j, inputValuesAux[i][j]);
+            }
+            double predictedValue = 0;
+            for(int j=0;j<models.size();j++){
+                if(weights[j] >= 0.00001){
+                    Individual ind = models.get(j);
+                    Tree genotype = (Tree) ind.getGenotype();
+                    Function func = genotype.generate();
+                    Double val = func.eval(d);
+                    double slope = genotype.getScalingSlope();
+                    double intercept = genotype.getScalingIntercept();
+                    val = (val*slope) + intercept;
+                    if(round) val = (double)Math.round(val);
+                    predictedValue += weights[j] * val;
+                    func = null;
+                }
+            }
+            if(round) predictedValue = Math.round(predictedValue);
+            printWriter.println(predictedValue);
+            d.clear();
+        }
+        printWriter.flush();
+        printWriter.close();
     }
     
     /**

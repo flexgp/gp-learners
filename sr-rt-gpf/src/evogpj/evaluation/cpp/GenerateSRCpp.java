@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013 Evolutionary Design and Optimization Group
+ * Copyright (c) 2011-2013 ALFA Group
  * 
  * Licensed under the MIT License.
  * 
@@ -14,7 +14,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Ignacio Arnaldo
+ * 
  */
+
 package evogpj.evaluation.cpp;
 
 import evogpj.evaluation.Expression;
@@ -28,8 +31,8 @@ import java.util.Scanner;
 //import sun.management.counter.Variability;
 
 /**
- * 
- * @author nacho
+ * Just in time code generation to compute model error in C++
+ * @author Ignacio Arnaldo
  */
 public class GenerateSRCpp {
 

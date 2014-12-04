@@ -13,7 +13,8 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
- *
+ * 
+ * @author Ignacio Arnaldo
  */
 package evogpj.bool;
 
@@ -23,15 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abstraction/extension of the genotype evaluation traversal. The problem: we
- * need to traverse the entire genotype tree to evaluate every single training
- * case. This is expensive (in running time). Solution: traverse tree once,
- * capture that traversal as a {@link Function}, and use that for evaluations.
- * That's the purpose of this interface and all implementations of this
- * interface. A further optimization might be to perform some sort of static
- * analysis to intelligently remove useless/dead subexpressions (such as those
- * which always evaluate to the same value, or don't affect any subsequent
- * evaluations).
+ * abstract class to implement boolean functions
  * 
  * @author Ignacio Arnaldo
  */
@@ -43,6 +36,7 @@ public abstract class BooleanFunction {
      * that training case.
      * 
      * @param t the training case to evaluate.
+     * @param conditions conditions found in the preprocessing step
      * @return value computed by applying this function to the training case.
      */
     public abstract Boolean eval(List<Double> t,ArrayList<Interval> conditions);
@@ -70,6 +64,7 @@ public abstract class BooleanFunction {
         }
     }
 
+        
     /**
      * Given a label, return the constructor for the class of the function which
      * represents the label.
@@ -109,11 +104,20 @@ public abstract class BooleanFunction {
             return 0;
         }
     }
-	
+
+    /**
+     * @return an infix format string representing this function, with #arity %s inclusions.
+     */
+    public static String getPrefixFormatString(){
+        return "";
+    }
+    
     /**
      * @return an infix format string representing this function, with #arity %s inclusions.
      */
     public static String getInfixFormatString(){
         return "";
     }
+    
+    
 }

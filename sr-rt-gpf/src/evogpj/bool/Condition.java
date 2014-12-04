@@ -24,10 +24,15 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+/**
+ * A split of the data used to form rules - only applies to the ruleTree learner
+ * @author Ignacio Arnaldo
+ */
 public class Condition extends ZeroArgBooleanFunction {
 
     private final int indexCondition;
 
+    
     public Condition(String label) throws GPException {
         super(label);
         if (label.startsWith("C") || label.startsWith("c")) {
@@ -54,7 +59,11 @@ public class Condition extends ZeroArgBooleanFunction {
         return val;
     }
 
-    public static String getInfixFormatString() {
+    public static String getPrefixFormatString() {
+        return "%s";
+    }
+    
+    public static String getInfixFormatString(){
         return "%s";
     }
 }

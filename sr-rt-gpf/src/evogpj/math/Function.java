@@ -14,6 +14,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby
+ * 
  */
 package evogpj.math;
 
@@ -82,9 +84,10 @@ public abstract class Function {
 		} else if (label.equals("quart")) {
 			return Quart.class;
 		} else {
-			return Const.class;
+			return null;
 		}
 	}
+
 
 	/**
 	 * Given a label, return the constructor for the class of the function which
@@ -132,6 +135,8 @@ public abstract class Function {
 	 * @return an infix format string representing this function, with #arity %s inclusions.
 	 */
 	public static String getInfixFormatString(){
-		return "";
+            return "";
 	}
+        
+
 }

@@ -48,8 +48,7 @@ public class TreeInitialize extends RandomOperator implements Initialize {
 	 * @param props properties file.
 	 * @param TGen generator for creating the new trees.
 	 */
-	public TreeInitialize(MersenneTwisterFast rand, Properties props,
-			TreeGenerator TGen) {
+	public TreeInitialize(MersenneTwisterFast rand, Properties props,TreeGenerator TGen) {
 		super(rand);
 		if (props.containsKey(Parameters.Names.TREE_INIT_MAX_DEPTH))
 			TREE_INITIAL_MAX_DEPTH = Integer.valueOf(props

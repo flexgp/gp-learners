@@ -28,7 +28,7 @@ import java.util.List;
 import evogpj.math.Function;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Evaluate scaled symbolic regression models
  * 
  * @author Ignacio Arnaldo
  */

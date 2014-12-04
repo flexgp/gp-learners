@@ -24,17 +24,22 @@ import evogpj.genotype.Tree;
 import evogpj.genotype.TreeGenerator;
 import evogpj.gp.Individual;
 import evogpj.gp.Population;
+import evogpj.algorithm.Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import evogpj.preprocessing.Interval;
+
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Test ruleTree models
  * 
  * @author Ignacio Arnaldo
  */
@@ -43,10 +48,10 @@ public class TestRuleTrees {
     private String pathToData;
     private final DataJava data;
         
+    private String dirPath;
+    
     private String pathToPop;
     private Population models;
-    
-    private String pathToConditions;
     
     ArrayList<Interval> intervals;
     
@@ -54,26 +59,44 @@ public class TestRuleTrees {
      * Create a new fitness operator, using the provided data, for assessing
      * individual solutions to Symbolic Regression problems. There is one
      * parameter for this fitness evaluation:
-     * @param data
-     *            The dataset (training cases, output variable) to use in
-     *            computing the fitness of individuals.
+     * @param aPathToData
+     * @param aPathToPop
+     * @throws java.io.IOException
+     * @throws java.lang.ClassNotFoundException
      */
-    public TestRuleTrees(String aPathToData, String aPathToConditions,String aPathToPop) throws IOException, ClassNotFoundException {
+    public TestRuleTrees(String aPathToData, String aPathToPop) throws IOException, ClassNotFoundException {
         pathToData = aPathToData;
-        pathToConditions = aPathToConditions;
         pathToPop = aPathToPop;
+        this.dirPath="";
         this.data = new CSVDataJava(pathToData);
-        readRuleTrees(pathToPop);
-        readConditions(pathToConditions);
+        readConditionsAndRuleTrees(pathToPop);
+    }
+    
+    public TestRuleTrees(List<String> testData, String dirPath, String aPathToPop) throws IOException, ClassNotFoundException {
+        //pathToData = aPathToData;
+        pathToPop = aPathToPop;
+        this.data = new CSVDataJava(testData);
+        this.dirPath=dirPath;
+        readConditionsAndRuleTrees(pathToPop);
     }
 
     
-    private void readRuleTrees(String filePath) throws IOException, ClassNotFoundException{
-        models = new Population();
-        ArrayList<String> alModels = new ArrayList<String>();
+    private void readConditionsAndRuleTrees(String filePath) throws IOException, ClassNotFoundException{
+        intervals = new ArrayList<Interval>();
         Scanner sc = new Scanner(new FileReader(filePath));
+        String line = sc.nextLine();
+        while(!line.equals("MODELS:")){
+            String[] tokens = line.split(" ");
+            String varAux = tokens[2];
+            double lbAux = Double.valueOf(tokens[5]);
+            double ubAux = Double.valueOf(tokens[7]);
+            Interval iAux = new Interval(varAux, lbAux, ubAux);
+            intervals.add(iAux);
+            line = sc.nextLine();
+        }
+        models = new Population();
         while(sc.hasNextLine()){
-            String line = sc.nextLine();
+            line = sc.nextLine();
             String tokens[] = line.split(",");
             String model = tokens[0];
             Tree g = TreeGenerator.generateTree(model);
@@ -81,22 +104,33 @@ public class TestRuleTrees {
             models.add(iAux);
         }
     }
-  
-   private void readConditions(String conditionsPath) throws IOException, ClassNotFoundException{
-        intervals = new ArrayList<Interval>();
-        Scanner sc = new Scanner(new FileReader(conditionsPath));
-        while(sc.hasNextLine()){
-            String line = sc.nextLine();
-            String[] tokens = line.split(" ");
-            String varAux = tokens[2];
-            double lbAux = Double.valueOf(tokens[5]);
-            double ubAux = Double.valueOf(tokens[7]);
-            Interval iAux = new Interval(varAux, lbAux, ubAux);
-            intervals.add(iAux);
+
+    public void predictions(Individual ind,String filePath, int indexIndi) throws IOException {
+        Tree genotype = (Tree) ind.getGenotype();
+        BooleanFunction func = genotype.generateBoolean();
+        List<Double> d;
+        BufferedWriter bw = new BufferedWriter(new FileWriter(filePath + "_" + indexIndi + ".csv"));
+        PrintWriter printWriter = new PrintWriter(bw);
+        double[][] inputValuesAux = data.getInputValues();
+        for (int i = 0; i < data.getNumberOfFitnessCases(); i++) {
+            d = new ArrayList<Double>();
+            for (int j = 0; j < data.getNumberOfFeatures(); j++) {
+                d.add(j, inputValuesAux[i][j]);
+            }
+            boolean val = func.eval(d,intervals);
+            if(val==true){
+                printWriter.println(1);
+            }else{
+                printWriter.println(0);
+            }
+            d.clear();
         }
+        func = null;
+        printWriter.flush();
+        printWriter.close();
     }
-   
-    public void eval(Individual ind) {
+    
+    public void eval(Individual ind, boolean log) {
         Tree genotype = (Tree) ind.getGenotype();
         BooleanFunction func = genotype.generateBoolean();
         List<Double> d;
@@ -148,24 +182,63 @@ public class TestRuleTrees {
         double precision = numTruePositives / numPositivePrediction;
         double recall = numTruePositives / numPositiveTarget;
         double fscore = 2 * ( (precision*recall) / (precision + recall) );
-        System.out.println();
-        System.out.println("RULE TREE: " + ind.getGenotype().toString());
-        System.out.println("ACCURACY: " + accuracy);
-        System.out.println("PRECISION: " + precision);
-        System.out.println("RECALL: " + recall);
-        System.out.println("F-SCORE: " + fscore);
-        System.out.println("FALSE POSITIVE RATE: " + falsePositiveRate);
-        System.out.println("FALSE NEGATIVE RATE: " + falseNegativeRate);
         
-        System.out.println();
+        StringBuffer result = new StringBuffer();
+        
+        result.append("\n");
+        result.append("RULE TREE: " + ind.getGenotype().toString()+'\n');
+        result.append("ACCURACY: " + accuracy+'\n');
+        result.append("PRECISION: " + precision+'\n');
+        result.append("RECALL: " + recall+'\n');
+        result.append("F-SCORE: " + fscore+'\n');
+        result.append("FALSE POSITIVE RATE: " + falsePositiveRate+'\n');
+        result.append("FALSE NEGATIVE RATE: " + falseNegativeRate+'\n');
+        result.append("\n");
+        
+        if(log){
+        	saveText(this.dirPath+Parameters.Defaults.RESULT_PATH,result.toString(),false);
+        }
+        
+        System.out.println(result.toString());
+        
         func = null;
     }
-
-    public void evalPop() {
+    
+    
+    public void predictionsPop(String filePath) throws IOException {
+        int indexIndi=0;
         for (Individual individual : models) {
-            this.eval(individual);
+            this.predictions(individual,filePath,indexIndi);
+            indexIndi++;
         }
+    }  
+    
+    public void evalPop() {
+        evalPop(false);
     }    
+    
+    public void evalPop(boolean log){
+    	for (Individual individual : models) {
+            this.eval(individual,log);
+        }
+    }
+    
+    /**
+     * Save text to a filepath
+     * @param filepath
+     * @param text
+     */
+    protected void saveText(String filepath, String text, Boolean append) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filepath,append));
+            PrintWriter printWriter = new PrintWriter(bw);
+            printWriter.write(text);
+            printWriter.flush();
+            printWriter.close();
+        } catch (IOException e) {
+            System.exit(-1);
+        }
+    }
 
 
 }

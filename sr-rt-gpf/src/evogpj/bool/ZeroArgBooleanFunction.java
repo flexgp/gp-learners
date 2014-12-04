@@ -25,6 +25,6 @@ package evogpj.bool;
  */
 public abstract class ZeroArgBooleanFunction extends BooleanFunction {
 
-	public ZeroArgBooleanFunction(String label) {
-	}
+    public ZeroArgBooleanFunction(String label) {
+    }
 }

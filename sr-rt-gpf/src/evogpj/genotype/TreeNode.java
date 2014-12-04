@@ -92,7 +92,7 @@ public class TreeNode implements Serializable {
 
 	@Override
 	public String toString() {
-		return label;
+            return label;
 	}
 
 	// TODO have a clear distinction between prefix and infix trees, and the ability to specify either for output.
@@ -116,44 +116,82 @@ public class TreeNode implements Serializable {
 	}
 
 	/**
+	 * Generate (prefix) c-expression
+	 * 
+	 * @return tree string
+	 */
+	public String toStringAsPrefix() {
+            try {
+                Class<? extends Function> c = Function.getClassFromLabel(label);
+                Method method = c.getMethod("getPrefixFormatString", new Class<?>[] {});
+                String prefixFormatString = (String) method.invoke(null);
+                if (children.isEmpty()) { // this is a terminal (const or var)
+                        String aux = String.format(prefixFormatString, label);
+                        return aux;
+                }
+                String[] childStrings = new String[children.size()];
+                for (int i = 0; i < children.size(); i++) {
+                        childStrings[i] = children.get(i).toStringAsPrefix();
+                }
+                String retval = String.format(prefixFormatString, ((Object[]) childStrings));
+                return retval;
+            } catch (SecurityException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            } catch (NoSuchMethodException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            } catch (IllegalArgumentException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            } catch (IllegalAccessException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            } catch (InvocationTargetException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            }
+            return null;
+	}
+
+	/**
 	 * Generate (infix) c-expression
 	 * 
 	 * @return tree string
 	 */
-	public String toStringAsInfix() {
-		try {
-			Class<? extends Function> c = Function.getClassFromLabel(label);
-			Method method = c.getMethod("getInfixFormatString", new Class<?>[] {});
-			String infixFormatString = (String) method.invoke(null);
-			if (children.isEmpty()) { // this is a terminal (const or var)
-                                String aux = String.format(infixFormatString, label);
-				return aux;
-			}
-			String[] childStrings = new String[children.size()];
-			for (int i = 0; i < children.size(); i++) {
-				childStrings[i] = children.get(i).toStringAsInfix();
-			}
-			String retval = String.format(infixFormatString, ((Object[]) childStrings));
-			return retval;
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			System.exit(-1);
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			System.exit(-1);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			System.exit(-1);
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			System.exit(-1);
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			System.exit(-1);
-		}
-		return null;
-	}
-	
+	public String toStringAsBooleanInfix() {
+            try {
+                Class<? extends BooleanFunction> c = BooleanFunction.getClassFromLabel(label);
+                Method method = c.getMethod("getInfixFormatString", new Class<?>[] {});
+                String infixFormatString = (String) method.invoke(null);
+                if (children.isEmpty()) { // this is a terminal (const or var)
+                        String aux = String.format(infixFormatString, label);
+                        return aux;
+                }
+                String[] childStrings = new String[children.size()];
+                for (int i = 0; i < children.size(); i++) {
+                        childStrings[i] = children.get(i).toStringAsBooleanInfix();
+                }
+                String retval = String.format(infixFormatString, ((Object[]) childStrings));
+                return retval;
+            } catch (SecurityException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            } catch (NoSuchMethodException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            } catch (IllegalArgumentException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            } catch (IllegalAccessException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            } catch (InvocationTargetException e) {
+                    // TODO Auto-generated catch block
+                    System.exit(-1);
+            }
+            return null;
+	}        
 	/**
 	 * Generate S-expression based on the subtree rooted at this node
 	 * 
@@ -174,6 +212,7 @@ public class TreeNode implements Serializable {
 			return this.toString();
 		}
 	}
+        
 
 	/**
 	 * Do a depth-first preorder traversal of the tree starting at a given node.

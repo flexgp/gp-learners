@@ -28,7 +28,7 @@ import evogpj.algorithm.Parameters;
 /**
  * Factory class for creating Trees.
  * 
- * @author Owen Derby
+ * @author Owen Derby and Ignacio Arnaldo
  * @see Tree
  */
 public class TreeGenerator {

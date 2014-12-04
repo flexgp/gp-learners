@@ -26,19 +26,22 @@ import evogpj.gp.Population;
 import java.util.ArrayList;
 import java.util.List;
 import evogpj.math.Function;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Test GPFunction classifiers
  * 
  * @author Ignacio Arnaldo
  */
 public class TestGPFunctionClassifiers {
     
-    private String pathToData;
-    private final DataJava data;
+    private String pathToTestData;
+    private final DataJava testData;
         
     private String pathToPop;
     private Population models;
@@ -47,14 +50,16 @@ public class TestGPFunctionClassifiers {
      * Create a new fitness operator, using the provided data, for assessing
      * individual solutions to Symbolic Regression problems. There is one
      * parameter for this fitness evaluation:
-     * @param data
-     *            The dataset (training cases, output variable) to use in
-     *            computing the fitness of individuals.
+     * @param aPathToTrainData
+     * @param aPathToTestData
+     * @param aPathToPop
+     * @throws java.io.IOException
+     * @throws java.lang.ClassNotFoundException
      */
-    public TestGPFunctionClassifiers(String aPathToData, String aPathToPop) throws IOException, ClassNotFoundException {
-        pathToData = aPathToData;
+    public TestGPFunctionClassifiers(String aPathToTestData, String aPathToPop) throws IOException, ClassNotFoundException {
+        pathToTestData = aPathToTestData;
         pathToPop = aPathToPop;
-        this.data = new CSVDataJava(pathToData);
+        testData = new CSVDataJava(pathToTestData);
         readGPFunctionClassifiers(pathToPop);
     }
 
@@ -70,6 +75,10 @@ public class TestGPFunctionClassifiers {
             Individual iAux = new Individual(g);
             double theshold = Double.valueOf(tokens[3]);
             iAux.setThreshold(theshold);
+            double minTrainOutput = Double.valueOf(tokens[4]);
+            iAux.setMinTrainOutput(minTrainOutput);
+            double maxTrainOutput = Double.valueOf(tokens[5]);
+            iAux.setMaxTrainOutput(maxTrainOutput);
             models.add(iAux);
         }
     }
@@ -81,32 +90,149 @@ public class TestGPFunctionClassifiers {
     }
     
     
+     /**
+     * @param filePath
+     * @throws java.io.IOException
+     * @see Function
+     */
+    public void predictionsSingleModel(String filePath) throws IOException {
+        Individual ind = models.get(0);
+        Tree genotype = (Tree) ind.getGenotype();
+        Function func = genotype.generate();
+        // SET MIN AND MAX WITH TRAINING SET
+        double maxTrainOutput = ind.getMaxTrainOutput();
+        double minTrainOutput = ind.getMinTrainOutput();
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
+        PrintWriter printWriter = new PrintWriter(bw);
+        double threshold = ind.getThreshold();
+        double[][] inputValuesTest = testData.getInputValues();
+        double[] predictions = new double[testData.getNumberOfFitnessCases()];
+        List<Double> d;
+        for (int i = 0; i < testData.getNumberOfFitnessCases(); i++) {
+            d = new ArrayList<Double>();
+            for (int j = 0; j < testData.getNumberOfFeatures(); j++) {
+                d.add(j, inputValuesTest[i][j]);
+            }
+            Double val = func.eval(d);
+            if(val>maxTrainOutput) val = maxTrainOutput;
+            if(val<minTrainOutput) val = minTrainOutput;
+            predictions[i] = val;
+            d.clear();
+            double scaled = scaleValue(predictions[i],minTrainOutput,maxTrainOutput);
+            boolean pred=false;
+            if(scaled>=threshold){
+                pred = true;
+            }
+            if(pred==true){
+                printWriter.println(1);
+            }else{
+                printWriter.println(0);
+            }
+        }
+        printWriter.flush();
+        printWriter.close();
+        func = null;
+    }
+    
+         /**
+     * @param filePath
+     * @throws java.io.IOException
+     * @see Function
+     */
+    public void outputSingleModel(String filePath) throws IOException {
+        Individual ind = models.get(0);
+        Tree genotype = (Tree) ind.getGenotype();
+        Function func = genotype.generate();
+        // SET MIN AND MAX WITH TRAINING SET
+        double maxTrainOutput = ind.getMaxTrainOutput();
+        double minTrainOutput = ind.getMinTrainOutput();
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
+        PrintWriter printWriter = new PrintWriter(bw);
+        double threshold = ind.getThreshold();
+        double[][] inputValuesTest = testData.getInputValues();
+        double[] predictions = new double[testData.getNumberOfFitnessCases()];
+        List<Double> d;
+        for (int i = 0; i < testData.getNumberOfFitnessCases(); i++) {
+            d = new ArrayList<Double>();
+            for (int j = 0; j < testData.getNumberOfFeatures(); j++) {
+                d.add(j, inputValuesTest[i][j]);
+            }
+            Double val = func.eval(d);
+            if(val>maxTrainOutput) val = maxTrainOutput;
+            if(val<minTrainOutput) val = minTrainOutput;
+            predictions[i] = val;
+            d.clear();
+            double scaled = scaleValue(predictions[i],minTrainOutput,maxTrainOutput);
+            printWriter.println(scaled);
+        }
+        printWriter.flush();
+        printWriter.close();
+        func = null;
+    }
+    
+     /**
+     * @param filePath
+     * @throws java.io.IOException
+     * @see Function
+     */
+    public void predictionsPop(String filePath) throws IOException {
+        int indexIndi = 0;
+        for(Individual ind:models){
+            Tree genotype = (Tree) ind.getGenotype();
+            Function func = genotype.generate();
+            // SET MIN AND MAX WITH TRAINING SET
+            double maxTrainOutput = ind.getMaxTrainOutput();
+            double minTrainOutput = ind.getMinTrainOutput();
+            
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filePath + "_" + indexIndi + ".csv"));
+            PrintWriter printWriter = new PrintWriter(bw);
+            double threshold = ind.getThreshold();
+            double[][] inputValuesTest = testData.getInputValues();
+            double[] predictions = new double[testData.getNumberOfFitnessCases()];
+            List<Double> d;
+            for (int i = 0; i < testData.getNumberOfFitnessCases(); i++) {
+                d = new ArrayList<Double>();
+                for (int j = 0; j < testData.getNumberOfFeatures(); j++) {
+                    d.add(j, inputValuesTest[i][j]);
+                }
+                Double val = func.eval(d);
+                if(val>maxTrainOutput) val = maxTrainOutput;
+                if(val<minTrainOutput) val = minTrainOutput;
+                predictions[i] = val;
+                d.clear();
+                double scaled = scaleValue(predictions[i],minTrainOutput,maxTrainOutput);
+                boolean pred=false;
+                if(scaled>=threshold){
+                    pred = true;
+                }
+                if(pred==true){
+                    printWriter.println(1);
+                }else{
+                    printWriter.println(0);
+                }
+            }
+            printWriter.flush();
+            printWriter.close();
+            func = null;
+            indexIndi++;
+        }
+    }
+    
     /**
      * @see Function
      */
     public void evalPop() {
-        double[] targets = data.getTargetValues();
+        
         for(Individual ind:models){
-            double threshold = ind.getThreshold();
             Tree genotype = (Tree) ind.getGenotype();
             Function func = genotype.generate();
-            List<Double> d;
-            double[][] inputValuesAux = data.getInputValues();
-            double[] predictions = new double[data.getNumberOfFitnessCases()];
-            double maxPhenotype = -Double.MAX_VALUE;
-            double minPhenotype = Double.MAX_VALUE;
-            for (int i = 0; i < data.getNumberOfFitnessCases(); i++) {
-                d = new ArrayList<Double>();
-                for (int j = 0; j < data.getNumberOfFeatures(); j++) {
-                    d.add(j, inputValuesAux[i][j]);
-                }
-                Double val = func.eval(d);
-                if(val>maxPhenotype) maxPhenotype = val;
-                if(val<minPhenotype) minPhenotype = val;
-                predictions[i] = val;
-                d.clear();
-            }
-                
+            // SET MIN AND MAX WITH TRAINING SET
+            double maxTrainOutput = ind.getMaxTrainOutput();
+            double minTrainOutput = ind.getMinTrainOutput();
+            
+            // check predictions on test set
             double numPositiveTarget = 0;
             double numNegativeTarget = 0;
             double numPositivePrediction = 0;
@@ -117,10 +243,24 @@ public class TestGPFunctionClassifiers {
             double numTrueNegatives = 0;
             double accuratePredictions = 0;
             
-            for (int i = 0; i < data.getNumberOfFitnessCases(); i++) {
+            double threshold = ind.getThreshold();
+            double[] targetsTest = testData.getTargetValues();
+            double[][] inputValuesTest = testData.getInputValues();
+            double[] predictions = new double[testData.getNumberOfFitnessCases()];
+            List<Double> d;
+            for (int i = 0; i < testData.getNumberOfFitnessCases(); i++) {
+                d = new ArrayList<Double>();
+                for (int j = 0; j < testData.getNumberOfFeatures(); j++) {
+                    d.add(j, inputValuesTest[i][j]);
+                }
+                Double val = func.eval(d);
+                if(val>maxTrainOutput) val = maxTrainOutput;
+                if(val<minTrainOutput) val = minTrainOutput;
+                predictions[i] = val;
+                d.clear();
                 boolean target = false;
-                if(targets[i]==1) target = true;
-                double scaled = scaleValue(predictions[i],minPhenotype,maxPhenotype);
+                if(targetsTest[i]==1) target = true;
+                double scaled = scaleValue(predictions[i],minTrainOutput,maxTrainOutput);
                 boolean pred=false;
                 if(scaled>=threshold){
                     pred = true;
@@ -148,7 +288,7 @@ public class TestGPFunctionClassifiers {
             
             double falsePositiveRate = numFalsePositives / numNegativeTarget;
             double falseNegativeRate = numFalseNegatives / numPositiveTarget;
-            double accuracy = accuratePredictions / data.getNumberOfFitnessCases();
+            double accuracy = accuratePredictions / testData.getNumberOfFitnessCases();
             double precision = numTruePositives / numPositivePrediction;
             double recall = numTruePositives / numPositiveTarget;
             double fscore = 2 * ( (precision*recall) / (precision + recall) );

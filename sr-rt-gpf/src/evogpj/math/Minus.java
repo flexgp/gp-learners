@@ -13,15 +13,27 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
+ * 
+ * @author Owen Derby and Ignacio Arnaldo
  *
  */
+
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Minus extends TwoArgFunction {
 
-	public Minus(Function a1, Function a2) {
+    /**
+     *
+     * @param a1
+     * @param a2
+     */
+    public Minus(Function a1, Function a2) {
 		super(a1, a2);
 	}
 
@@ -30,7 +42,11 @@ public class Minus extends TwoArgFunction {
 		return arg1.eval(t) - arg2.eval(t);
 	}
 
-	public static String getInfixFormatString() {
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
             //return "(%s - %s)";
             return "(- %s %s)";
 	}

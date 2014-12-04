@@ -14,24 +14,39 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
+
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Exp extends OneArgFunction {
 
-	public Exp(Function a1) {
-		super(a1);
-	}
+    /**
+     *
+     * @param a1
+     */
+    public Exp(Function a1) {
+        super(a1);
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		return Math.exp(arg.eval(t));
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        return Math.exp(arg.eval(t));
+    }
 
-	public static String getInfixFormatString() {
-            //return "exp(%s)";
-            return "(exp %s)";
-	}
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "exp(%s)";
+        return "(exp %s)";
+    }
 }

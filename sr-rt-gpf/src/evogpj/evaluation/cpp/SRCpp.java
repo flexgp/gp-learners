@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013 Evolutionary Design and Optimization Group
+ * Copyright (c) 2011-2013 ALFA Group
  * 
  * Licensed under the MIT License.
  * 
@@ -14,6 +14,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Ignacio Arnaldo
+ * 
  */
 package evogpj.evaluation.cpp;
 
@@ -33,7 +35,7 @@ import evogpj.algorithm.Parameters;
 import evogpj.evaluation.FitnessFunction;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Implements fitness evaluation for symbolic regression in C++
  * 
  * @author Owen Derby
  */

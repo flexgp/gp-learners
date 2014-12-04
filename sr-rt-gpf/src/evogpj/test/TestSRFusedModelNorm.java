@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Test fused symbolic regression models
  * 
  * @author Ignacio Arnaldo
  */

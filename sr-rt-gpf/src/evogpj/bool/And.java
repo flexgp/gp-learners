@@ -35,8 +35,11 @@ public class And extends TwoArgBooleanFunction {
         return val;
     }
 
-    public static String getInfixFormatString() {
-        //return "(%s + %s)";
+    public static String getPrefixFormatString() {
         return "(and %s %s)";
+    }
+    
+    public static String getInfixFormatString(){
+        return "( %s and %s )";
     }
 }

@@ -35,8 +35,12 @@ public class Not extends OneArgBooleanFunction {
         return val;
     }
 
-    public static String getInfixFormatString() {
+    public static String getPrefixFormatString() {
         //return "cos(%s)";
         return "(not %s)";
+    }
+    
+    public static String getInfixFormatString(){
+        return "not( %s )";
     }
 }

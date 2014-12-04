@@ -34,26 +34,30 @@ import java.util.LinkedHashMap;
  */
 public class FitnessComparisonStandardizer {
 
-	/**
-	 * Standardizes the way by which fitnesses are compared. Will always return
-	 * a fitness score where lower indicates better.
-	 * 
-	 * @return
-	 */
-	public static Double getFitnessForMinimization(Individual individual,
-			String funcName, LinkedHashMap<String, FitnessFunction> fitnessFunctions) {
-		Double fitness = individual.getFitness(funcName);
-		if (fitnessFunctions.get(funcName).isMaximizingFunction()) {
-			fitness = invert(fitness);
-		}
-		return fitness;
-	}
+    /**
+     * Standardizes the way by which fitnesses are compared. Will always return
+     * a fitness score where lower indicates better.
+     * 
+     * @param individual
+     * @param funcName
+     * @param fitnessFunctions
+     * @return
+     */
+    public static Double getFitnessForMinimization(Individual individual,String funcName, LinkedHashMap<String, FitnessFunction> fitnessFunctions) {
+        Double fitness = individual.getFitness(funcName);
+        if (fitnessFunctions.get(funcName).isMaximizingFunction()) {
+            fitness = invert(fitness);
+        }
+        return fitness;
+    }
         
 	/**
 	 * Standardizes the way by which fitnesses are compared. Will always return
 	 * a fitness score where lower indicates better.
 	 * 
 	 * @param fitnesses a LinkedHashMap mapping fitness function name to fitness score
+         * @param funcName
+         * @param fitnessFunctions
 	 * @return
 	 */
 	public static Double getFitnessForMinimization(LinkedHashMap<String, Double> fitnesses, String funcName, LinkedHashMap<String, FitnessFunction> fitnessFunctions) {
@@ -70,10 +74,10 @@ public class FitnessComparisonStandardizer {
 	 * Invert a fitness value, thus converting from maximization to minimization
 	 * score, or vice versa
 	 * 
-	 * @param input
+         * @param fitness
 	 * @return
 	 */
 	public static Double invert(Double fitness) {
-		return (1 - fitness) / (1 + fitness);
+            return (1 - fitness) / (1 + fitness);
 	}
 }

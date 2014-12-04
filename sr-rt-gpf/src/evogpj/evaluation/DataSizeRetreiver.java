@@ -13,7 +13,8 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
- *
+ * 
+ * @author Dylan Sherry
  */
 package evogpj.evaluation;
 
@@ -36,7 +37,8 @@ public class DataSizeRetreiver {
 	/**
 	 * Set the number of terminals present in the file
 	 * 
-	 * @throws IOException
+        * @param filepath
+        * @return 
 	 */
 	public static int num_terminals(String filepath) {
 		try {
@@ -49,9 +51,8 @@ public class DataSizeRetreiver {
 			return tokens.length - 1; // assuming one output variable
 		} catch (FileNotFoundException e) {
 			System.err.println(String.format("Error: file %s not found.", filepath));
-			System.exit(-1);
 		} catch (IOException e) {
-			System.exit(-1);
+			System.err.println(String.format("Error: file %s not found.", filepath));
 		}
 		return -1;
 	}
@@ -59,7 +60,8 @@ public class DataSizeRetreiver {
 	/**
 	 * Set the number of lines found in the file
 	 * 
-	 * @throws IOException
+         * @param filepath
+         * @return 
 	 */
 	public static int num_fitness_cases(String filepath) {
 		try {
@@ -83,9 +85,8 @@ public class DataSizeRetreiver {
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println(String.format("Error: file %s not found.", filepath));
-			System.exit(-1);
 		} catch (IOException e) {
-			System.exit(-1);
+			System.err.println(String.format("Error: file %s not found.", filepath));
 		}
 		return -1;
 	}

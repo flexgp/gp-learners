@@ -39,8 +39,13 @@ public class BooleanConst extends ZeroArgBooleanFunction {
 
     /**
      * Return a format string for inserting children
+     * @return 
      */
-    public static String getInfixFormatString() {
-            return "%s";
+    public static String getPrefixFormatString() {
+        return "%s";
+    }
+    
+    public static String getInfixFormatString(){
+        return "%s";
     }
 }

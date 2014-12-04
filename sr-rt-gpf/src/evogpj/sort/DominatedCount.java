@@ -30,7 +30,7 @@ import evogpj.operator.Operator;
 /**
  * A class for performing a non-dominated sort of individuals
  * 
- * @author Dylan Sherry
+ * @author Dylan Sherry and Ignacio Arnaldo
  */
 public class DominatedCount extends Operator {
 
@@ -38,6 +38,8 @@ public class DominatedCount extends Operator {
      * Performs a O(mn^2) non-dominated sort, where m is the number of objective
      * functions and n is the population size
      * 
+     * @param p
+     * @param f
      * @throws DominationException
      */
     public static void countDominated(Population p,LinkedHashMap<String, FitnessFunction> f) throws DominationException {
@@ -70,6 +72,11 @@ public class DominatedCount extends Operator {
      * (1) A is at least as good as B in all objectives, and (2) A is strictly
      * better than B in at least one objective
      * 
+     * @param a
+     * @param b
+     * @param fitnessFunctions
+     * @return 
+     * @throws evogpj.sort.DominatedCount.DominationException
      */
     @SuppressWarnings("static-access")
     public static boolean domination(Individual a, Individual b, LinkedHashMap<String, FitnessFunction> fitnessFunctions )throws DominationException {

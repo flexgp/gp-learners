@@ -34,8 +34,13 @@ public class Or extends TwoArgBooleanFunction {
         return val;
     }
 
-    public static String getInfixFormatString() {
+    public static String getPrefixFormatString() {
         //return "(%s + %s)";
         return "(or %s %s)";
     }
+    
+    public static String getInfixFormatString() {
+        return "( %s or %s )";
+    }
+
 }

@@ -14,25 +14,40 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
+
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Cube extends OneArgFunction {
 
-	public Cube(Function a1) {
-		super(a1);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     *
+     * @param a1
+     */
+    public Cube(Function a1) {
+        super(a1);
+        // TODO Auto-generated constructor stub
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		return Math.pow(arg.eval(t), 3);
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        return Math.pow(arg.eval(t), 3);
+    }
 
-	public static String getInfixFormatString() {
-            //return "(%s.^3)";
-            return "(cube %s)";
-	}
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "(%s.^3)";
+        return "(cube %s)";
+    }
 }

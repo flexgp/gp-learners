@@ -14,19 +14,28 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby
+ * 
  */
+
 package evogpj.math;
 
 /**
  * Encodes functions of one argument.
- * 
- * @author Owen Derby
+ *
  */
 public abstract class OneArgFunction extends Function {
 
-	protected final Function arg;
+    /**
+     * argument of the unary function 
+     */
+    protected final Function arg;
 
-	public OneArgFunction(Function a1) {
-		arg = a1;
-	}
+    /**
+     * create a function with one argument
+     * @param a1 
+     */
+    public OneArgFunction(Function a1) {
+        arg = a1;
+    }
 }

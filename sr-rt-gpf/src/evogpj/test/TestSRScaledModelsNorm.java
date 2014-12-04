@@ -37,7 +37,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Test linearly scaled symbolic regression models
  * 
  * @author Ignacio Arnaldo
  */

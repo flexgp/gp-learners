@@ -14,24 +14,40 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
+
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Plus extends TwoArgFunction {
 
-	public Plus(Function a1, Function a2) {
-		super(a1, a2);
-	}
+    /**
+     *
+     * @param a1
+     * @param a2
+     */
+    public Plus(Function a1, Function a2) {
+        super(a1, a2);
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		return arg1.eval(t) + arg2.eval(t);
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        return arg1.eval(t) + arg2.eval(t);
+    }
 
-	public static String getInfixFormatString() {
-            //return "(%s + %s)";
-            return "(+ %s %s)";
-	}
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "(%s + %s)";
+        return "(+ %s %s)";
+    }
 }

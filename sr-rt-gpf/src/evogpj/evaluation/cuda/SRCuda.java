@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013 Evolutionary Design and Optimization Group
+ * Copyright (c) 2011-2013 ALFA Group
  * 
  * Licensed under the MIT License.
  * 
@@ -14,6 +14,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Ignacio Arnaldo
+ * 
  */
 package evogpj.evaluation.cuda;
 
@@ -33,9 +35,9 @@ import evogpj.algorithm.Parameters;
 import evogpj.evaluation.FitnessFunction;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Generates CUDA code that evaluates the error of symbolic regression models
  * 
- * @author Owen Derby
+ * @author Ignacio Arnaldo
  */
 public class SRCuda extends FitnessFunction {
 

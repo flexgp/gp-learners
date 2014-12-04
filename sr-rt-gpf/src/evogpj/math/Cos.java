@@ -14,24 +14,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Cos extends OneArgFunction {
 
-	public Cos(Function a1) {
-		super(a1);
-	}
+    /**
+     *
+     * @param a1
+     */
+    public Cos(Function a1) {
+        super(a1);
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		return Math.cos(arg.eval(t));
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        return Math.cos(arg.eval(t));
+    }
 
-	public static String getInfixFormatString() {
-            //return "cos(%s)";
-            return "(cos %s)";
-	}
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "cos(%s)";
+        return "(cos %s)";
+    }
 }

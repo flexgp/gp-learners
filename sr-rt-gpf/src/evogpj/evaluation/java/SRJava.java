@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013 Evolutionary Design and Optimization Group
+ * Copyright (c) 2011-2013 ALFA Group
  * 
  * Licensed under the MIT License.
  * 
@@ -14,12 +14,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Ignacio Arnaldo
+ * 
  */
 package evogpj.evaluation.java;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 
 import evogpj.genotype.Tree;
@@ -32,21 +33,21 @@ import evogpj.math.means.Mean;
 import evogpj.math.means.PowerMean;
 import evogpj.algorithm.Parameters;
 import evogpj.evaluation.FitnessFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Implements fitness evaluation for symbolic regression.
- * 
- * @author Owen Derby
+ * Evaluation of symbolic regression models in Java
+ * @author Ignacio Arnaldo
  */
 public class SRJava extends FitnessFunction {
 
     private final DataJava data;
-    private final Mean MEAN_FUNC;
+    private int pow;
     private final boolean USE_INT;
     public static String FITNESS_KEY = Parameters.Operators.SR_JAVA_FITNESS;
     public Boolean isMaximizingFunction = true;
-    public Boolean discreteFitness = false;
-	
+    private int numThreads;
     /**
      * Create a new fitness operator, using the provided data, for assessing
      * individual solutions to Symbolic Regression problems. There are two
@@ -70,46 +71,21 @@ public class SRJava extends FitnessFunction {
      * @param data
      *            The dataset (training cases, output variable) to use in
      *            computing the fitness of individuals.
-     * @param props
-     *            system properties object.
      */
     public SRJava(DataJava data) {
-        this(data, 2, false);
+        this(data, 2, false,1);
     }
 
-    private SRJava(DataJava aData, int pow, boolean is_double) {
+    public SRJava(DataJava aData, int aPow, boolean is_int,int anumThreads) {
         this.data = aData;
-        MEAN_FUNC = getMeanFromP(pow);
-        USE_INT = is_double;
+        pow = aPow;
+        USE_INT = is_int;
+        numThreads = anumThreads;
     }
-
-    /**
-     * Set this instance's FITNESS_KEY to FITNESS_KEY_NEW
-     * 
-     * @param data
-     * @param props
-     * @param FITNESS_KEY_SUFFIX
-     */
-    public SRJava(DataJava aData, Properties props,String FITNESS_KEY_NEW) {
-        this(aData, props);
-        this.FITNESS_KEY = FITNESS_KEY_NEW;
-    }
-    
-    public SRJava(DataJava aData, Properties props) {
-        this.data = aData;
-        int power = Parameters.Defaults.MEAN_POW;
-        if (props.containsKey(Parameters.Names.MEAN_POW))
-            power = Integer.valueOf(props.getProperty(Parameters.Names.MEAN_POW));
-        MEAN_FUNC = getMeanFromP(power);
-        if (props.containsKey(Parameters.Names.COERCE_TO_INT))
-            USE_INT = Boolean.valueOf(props.getProperty(Parameters.Names.COERCE_TO_INT));
-        else
-            USE_INT = Parameters.Defaults.COERCE_TO_INT;
-    }
-
     /**
      * Should this fitness function be minimized (i.e. mean squared error) or
      * maximized?
+     * @return 
      */
     @Override
     public Boolean isMaximizingFunction() {
@@ -140,15 +116,13 @@ public class SRJava extends FitnessFunction {
     }
 
     /**
+     * @param ind
      * @see Function
      */
     public void eval(Individual ind) {
-        if (ind.getFitness(SRJava.FITNESS_KEY) != null) {
-                return;
-        }
         SRPhenotype phenotype = new SRPhenotype();
         Tree genotype = (Tree) ind.getGenotype();
-        MEAN_FUNC.reset();
+        Mean MEAN_FUNC = getMeanFromP(pow);
         SRPhenotype phenotype_tmp = new SRPhenotype();
         Function func = genotype.generate();
         // This is the most time-consuming part of any GP run - evaluation of
@@ -170,7 +144,7 @@ public class SRJava extends FitnessFunction {
         // scale predictions to [0,1] range (same as scaled_data) and then compute error
         final ScaledTransform scalePrediction = new ScaledTransform(phenotype_tmp.min, phenotype_tmp.max);
         final ScaledTransform scaleTarget = new ScaledTransform(this.data.getTargetMin(), this.data.getTargetMax());
-        double[] targetAux = this.getTarget();
+        double[] targetAux = getTarget();
         for (int i = 0; i < this.getTarget().length; i++) {
             Double scaled_val = scalePrediction.scaleValue(phenotype_tmp.getDataValue(i));
             if (this.USE_INT) {
@@ -181,8 +155,10 @@ public class SRJava extends FitnessFunction {
             MEAN_FUNC.addValue(Math.abs(targetAux[i] - scaled_val));
         }
         Double error = MEAN_FUNC.getMean();
+        
         // Because of scaling and normalization (done automatically by MEAN_FUNC), we ensure that error is always in range [0,1].
-        ind.setFitness(SRJava.FITNESS_KEY, errorToFitness(error));
+        double fitness=errorToFitness(error);
+        ind.setFitness(SRJava.FITNESS_KEY, fitness);
         phenotype_tmp = null;
         func = null;
 }
@@ -209,9 +185,28 @@ public class SRJava extends FitnessFunction {
 
     @Override
     public void evalPop(Population pop) {
-        for (Individual individual : pop) {
-            this.eval(individual);
+        
+        ArrayList<SRJavaThread> alThreads = new ArrayList<SRJavaThread>();
+        for(int i=0;i<numThreads;i++){
+            SRJavaThread threadAux = new SRJavaThread(i, pop,numThreads);
+            alThreads.add(threadAux);
         }
+        
+        for(int i=0;i<numThreads;i++){
+            SRJavaThread threadAux = alThreads.get(i);
+            threadAux.start();
+        }
+        
+        for(int i=0;i<numThreads;i++){
+            SRJavaThread threadAux = alThreads.get(i);
+            try {
+                threadAux.join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(SRJava.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+
     }
 
     /**
@@ -261,4 +256,27 @@ public class SRJava extends FitnessFunction {
             return (scaled_val * range) + min;
         }
     }
+    
+    public class SRJavaThread extends Thread{
+        private int indexThread, totalThreads;
+        private Population pop;
+        
+        public SRJavaThread(int anIndex, Population aPop,int aTotalThreads){
+            indexThread = anIndex;
+            pop = aPop;
+            totalThreads = aTotalThreads;
+        }
+
+        @Override
+        public void run(){
+            int indexIndi = 0;
+            for (Individual individual : pop) {
+                if(indexIndi%totalThreads==indexThread){
+                    eval(individual);
+                }
+                indexIndi++;
+            }
+        }
+     }
+        
 }

@@ -24,12 +24,24 @@ package evogpj.math;
  */
 public abstract class TwoArgFunction extends Function {
 
-	protected final Function arg1;
-	protected final Function arg2;
+    /**
+     * first argument of the function
+     */
+    protected final Function arg1;
 
-	public TwoArgFunction(Function a1, Function a2) {
-		arg1 = a1;
-		arg2 = a2;
-	}
+    /**
+     * second argument of the function
+     */
+    protected final Function arg2;
+
+    /**
+     * create a function with two arguments
+     * @param a1
+     * @param a2
+     */
+    public TwoArgFunction(Function a1, Function a2) {
+        arg1 = a1;
+        arg2 = a2;
+    }
 
 }

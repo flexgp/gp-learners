@@ -1,6 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (c) 2011-2013 ALFA Group
+ * 
+ * Licensed under the MIT License.
+ * 
+ * See the "LICENSE" file for a copy of the license.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.  
+ *
  */
 package evogpj.preprocessing;
 
@@ -8,20 +21,23 @@ import evogpj.evaluation.java.DataJava;
 import java.util.ArrayList;
 
 /**
- *
- * @author nacho
+ * Split variable ranges with a technique based on Kernel Density Estimation
+ * @author Ignacio Arnaldo
  */
 public class ComputeIntervals {
     
     DataJava data;
     int numberOfSteps;
     double minVariable,maxVariable;
+    double wPos, wNeg;
     
-    public ComputeIntervals(DataJava aD,int aNumberOfSteps){
+    public ComputeIntervals(DataJava aD,int aNumberOfSteps,double aWPos, double aWNeg){
         data = aD;
         numberOfSteps = aNumberOfSteps;
         minVariable = Double.MAX_VALUE;
         maxVariable = - Double.MAX_VALUE;
+        wPos = aWPos;
+        wNeg = aWNeg;
     }
     
     public ArrayList<Interval> computeIntervalsVariable(int featureIndex, String varLabel){
@@ -49,7 +65,7 @@ public class ComputeIntervals {
         currentStepValue += stepSize; 
         for(int i=1;i<numberOfSteps;i++){
             if(currentLabel==1){
-                if(posExtrapolated[i]>negExtrapolated[i]){
+                if((wPos*posExtrapolated[i])>(wNeg*negExtrapolated[i])){
                     // keep interval
                 }else{
                     // end interval and start another
@@ -60,7 +76,7 @@ public class ComputeIntervals {
                     currentLabel = 0;
                 }
             }else if(currentLabel==0){
-                if(posExtrapolated[i]<negExtrapolated[i]){
+                if((wPos*posExtrapolated[i])<(wNeg*negExtrapolated[i])){
                     // keep interval
                 }else{
                     // end interval and start another

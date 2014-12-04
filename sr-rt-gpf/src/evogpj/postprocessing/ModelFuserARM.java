@@ -13,7 +13,9 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
- *
+ * 
+ * @author Ignacio Arnaldo
+ * 
  */
 package evogpj.postprocessing;
 
@@ -28,7 +30,7 @@ import java.util.Collections;
  * This class implements the Adaptive Regression by Mixing algorithm as 
  * described in Yuhong Yang, Adaptive Regression by Mixing, Journal of American
  * Statistical Association, 96:454, 574-588, 2001.
- * @author nacho
+ * @author Ignacio Arnaldo
  */
 public class ModelFuserARM {
     
@@ -87,7 +89,7 @@ public class ModelFuserARM {
             //sd += Math.pow(input[i] - mean,2) / input.length ;
             sd += Math.pow(input[i] - mean,2) / indexSplit ;
         }
-        double standardDeviation = Math.sqrt(sd);
+            double standardDeviation = Math.sqrt(sd);
         return standardDeviation;
     }
 
@@ -183,7 +185,7 @@ public class ModelFuserARM {
                 sumExps += Math.exp(expEjs[i] - maxExpEj);
             }
         }
-        //double lnSumExp = Math.log(sumExps);
+        //double lnSumExp = Math.log(sumExps);exp
         double lnSumExp = maxExpEj + Math.log(sumExps);
         if(lnSumExp == Double.MAX_VALUE) lnSumExp = maxExpEj;
         return lnSumExp;

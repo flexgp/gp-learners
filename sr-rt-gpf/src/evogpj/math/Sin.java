@@ -14,24 +14,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Sin extends OneArgFunction {
 
-	public Sin(Function op) {
-		super(op);
-	}
+    /**
+     *
+     * @param op
+     */
+    public Sin(Function op) {
+        super(op);
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		return Math.sin(arg.eval(t));
-	}
-	
-	public static String getInfixFormatString() {
-            //return "sin(%s)";
-            return "(sin %s)";
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        return Math.sin(arg.eval(t));
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "sin(%s)";
+        return "(sin %s)";
+    }
 }

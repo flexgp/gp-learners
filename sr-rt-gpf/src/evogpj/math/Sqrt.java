@@ -14,24 +14,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Sqrt extends OneArgFunction {
 
-	public Sqrt(Function a1) {
-		super(a1);
-	}
+    /**
+     *
+     * @param a1
+     */
+    public Sqrt(Function a1) {
+        super(a1);
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		return Math.sqrt(Math.abs(arg.eval(t)));
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        return Math.sqrt(Math.abs(arg.eval(t)));
+    }
 
-	public static String getInfixFormatString() {
-		//return "mysqrt(%s)";
-                return "(mysqrt %s)";
-	}
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "mysqrt(%s)";
+        return "(mysqrt %s)";
+    }
 }

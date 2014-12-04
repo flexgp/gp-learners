@@ -14,16 +14,21 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby 
+ * 
  */
 package evogpj.math;
 
 /**
  * Encodes a thunk, or a function of no arguments.
  * 
- * @author Owen Derby
  */
 public abstract class ZeroArgFunction extends Function {
 
-	public ZeroArgFunction(String label) {
+    /**
+     *
+     * @param label
+     */
+    public ZeroArgFunction(String label) {
 	}
 }

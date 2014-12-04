@@ -14,29 +14,44 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Owen Derby and Ignacio Arnaldo
+ * 
  */
+
 package evogpj.math;
 
 import java.util.List;
 
+/**
+ *
+ * @author Owen Derby and Ignacio Arnaldo
+ */
 public class Log extends OneArgFunction {
 
-	public Log(Function a1) {
-		super(a1);
-	}
+    /**
+     *
+     * @param a1
+     */
+    public Log(Function a1) {
+        super(a1);
+    }
 
-	@Override
-	public Double eval(List<Double> t) {
-		Double a = Math.abs(arg.eval(t));
-		if (a < 1e-6) {
-			return (double) 0; // cc Silva 2008 thesis
-		} else {
-			return Math.log(a);
-		}
-	}
+    @Override
+    public Double eval(List<Double> t) {
+        Double a = Math.abs(arg.eval(t));
+        if (a < 1e-6) {
+            return (double) 0; // cc Silva 2008 thesis
+        } else {
+            return Math.log(a);
+        }
+    }
 
-	public static String getInfixFormatString() {
-            //return "log(%s)";
-            return "(log %s)";
-	}
+    /**
+     *
+     * @return
+     */
+    public static String getInfixFormatString() {
+        //return "log(%s)";
+        return "(log %s)";
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013 Evolutionary Design and Optimization Group
+ * Copyright (c) 2011-2013 ALFA Group
  * 
  * Licensed under the MIT License.
  * 
@@ -14,13 +14,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
  *
+ * @author Ignacio Arnaldo
+ * 
  */
 package evogpj.evaluation.cuda;
 
 import evogpj.evaluation.DataSizeRetreiver;
 
 /**
- * 
+ * Generates C code that reads the training data and stores it in shared mem
  * @author Ignacio Arnaldo
  */
 public class DataCuda {

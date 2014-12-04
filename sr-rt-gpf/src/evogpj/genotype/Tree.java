@@ -69,6 +69,7 @@ public class Tree extends Genotype {
 
     /**
      * Default: return unscaled MATLAB infix string
+     * @return 
      */
     @Override
     public String toString() {
@@ -79,17 +80,17 @@ public class Tree extends Genotype {
     public String toPrefixString() {
         return getRoot().toStringAsTree();
     }
-
-    public String toInfixString() {
-        return getRoot().toStringAsInfix();
+    
+    public String toBooleanInfixString() {
+        return getRoot().toStringAsBooleanInfix();
     }
 
     public String toScaledString() {
         double slope = this.getScalingSlope();
         double intercept = this.getScalingIntercept();
-        return String.format("(%.16f .* %s) + %.16f", slope, this.toInfixString(), intercept);
+        return String.format("(%.16f .* %s) + %.16f", slope, this.toPrefixString(), intercept);
     }
-
+        
     public boolean evalBoolean(List<Boolean> t) {
         return getRoot().evalBoolean(t);
     }
