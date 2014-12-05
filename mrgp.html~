@@ -32,6 +32,8 @@ href="#flexgp-machine-learning-with-genetic-programming"><span class="octicon oc
 eliminating direct comparison of the final program output against the target variable, y. Instead, we tune in linear combination all
 subexpressions of a program with respect to the target output y. Then, we compare y to the output of the regression model.</p>
 
+<p><center><img src="images/MRGP.png" height=200px align="middle" alt="Multi-level parallelism provided by FlexGP"></center></p>
+
 <h3><a name="lasso-implementation" class="anchor" href="#lasso-implementation"><span class="octicon 
 octicon-link"></span></a>Lasso implementation</h3>
  
