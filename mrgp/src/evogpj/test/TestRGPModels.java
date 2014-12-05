@@ -36,7 +36,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Implements fitness evaluation for symbolic regression.
+ * Test MRGP models.
  * 
  * @author Ignacio Arnaldo
  */

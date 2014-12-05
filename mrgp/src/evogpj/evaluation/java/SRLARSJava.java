@@ -13,7 +13,9 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  
- *
+ * 
+ * @author Ignacio Arnaldo
+ * 
  */
 package evogpj.evaluation.java;
 
@@ -21,8 +23,6 @@ import edu.uci.lasso.LassoFit;
 import edu.uci.lasso.LassoFitGenerator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-
 
 import evogpj.genotype.Tree;
 import evogpj.gp.Individual;
@@ -37,6 +37,10 @@ import evogpj.evaluation.FitnessFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * MRGP evaluation of symbolic regression models
+ * @author Ignacio Arnaldo
+ */
 public class SRLARSJava extends FitnessFunction {
 
     private final DataJava data;

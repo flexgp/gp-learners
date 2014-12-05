@@ -17,16 +17,10 @@
  */
 package evogpj.algorithm;
 
-import evogpj.postprocessing.ModelFuserARM;
 import evogpj.evaluation.java.CSVDataJava;
 import evogpj.evaluation.java.DataJava;
-import evogpj.evaluation.cpp.DataCpp;
-import evogpj.evaluation.cpp.SRCpp;
 import evogpj.evaluation.FitnessFunction;
-import evogpj.evaluation.cpp.SRModelScalerCpp;
 import evogpj.evaluation.java.SubtreeComplexityFitness;
-import evogpj.evaluation.java.SRModelScalerJava;
-import evogpj.evaluation.java.SRJava;
 import evogpj.evaluation.java.SRLARSJava;
 import evogpj.genotype.Tree;
 import evogpj.genotype.TreeGenerator;
@@ -65,7 +59,7 @@ import evogpj.sort.DominatedCount.DominationException;
 /**
  * This class contains the main method that runs the GP algorithm.
  * 
- * @author Owen Derby
+ * @author Owen Derby and Ignacio Arnaldo
  **/
 public class SymbRegMOO {
     
@@ -175,10 +169,6 @@ public class SymbRegMOO {
     protected int counterConvergence;
     // CURRENT FITNESS OF BEST INDIVIDUAL
     protected double lastFitness;
-    
-    // LINEAR SCALING OF BEST INDIVIDUAL PER GENERATION
-    //protected SRModelScalerJava modelScalerJava;
-    protected SRModelScalerCpp modelScalerCpp;
     
     private Properties props;
     
@@ -354,23 +344,6 @@ public class SymbRegMOO {
                 }
                 fitnessFunctions.put(fitnessOperatorName,new SRLARSJava(data, MEAN_POW, COERCE_TO_INT,EXTERNAL_THREADS));
                 //modelScalerJava = new SRModelScalerJava(data);
-            } else if (fitnessOperatorName.equals(Parameters.Operators.SR_CPP_FITNESS)) {
-                // this loads the data into shared memory
-                DataCpp ed = new DataCpp(PROBLEM, TARGET_NUMBER);
-                ed.readAndStoreDataset();
-                int numberOfFeatures = ed.getNumberOfFeatures();
-                int numberOfFitnessCases = ed.getNumberOfFitnessCases();
-                // create an external model scaler
-                modelScalerCpp = new SRModelScalerCpp(FUNC_SET, UNARY_FUNC_SET, PROBLEM,numberOfFitnessCases, numberOfFeatures,
-                                                        TARGET_NUMBER, EXTERNAL_THREADS, MEAN_POW,COERCE_TO_INT);
-                if (TERM_SET == null) {
-                    TERM_SET = new ArrayList<String>();
-                    for (int i = 0; i < numberOfFeatures; i++) TERM_SET.add("X" + (i + 1));
-                    System.out.println(TERM_SET);
-                }
-                SRCpp esrf = new SRCpp(FUNC_SET, UNARY_FUNC_SET, PROBLEM,numberOfFitnessCases, numberOfFeatures,
-                                                                TARGET_NUMBER, EXTERNAL_THREADS, MEAN_POW,COERCE_TO_INT);
-                fitnessFunctions.put(fitnessOperatorName, esrf);
             } else if (fitnessOperatorName.equals(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS)) {
                 fitnessFunctions.put(fitnessOperatorName,new SubtreeComplexityFitness());
             } else {
@@ -659,56 +632,8 @@ public class SymbRegMOO {
             this.saveText(KNEE_PATH, knee.getWeights().get(knee.getWeights().size()-1) + ",", true);
             this.saveText(KNEE_PATH, knee.getLassoIntercept() + ",", true);
             this.saveText(KNEE_PATH, knee.toString() + "\n", true);
-        } else if (firstFitnessFunction.equals(Parameters.Operators.SR_CPP_FITNESS) ){
-            //scale and save best model of each iteration
-            modelScalerCpp.scalePop(bestPop);
-            for(Individual ind:bestPop){
-                this.saveText(MODELS_PATH, ind.toScaledString() + "\n", true);
-            }
-            paretoFront.calculateEuclideanDistances(fitnessFunctions);
-            modelScalerCpp.scalePop(paretoFront);
-            Individual acc = paretoFront.get(0);
-            Individual comp = paretoFront.get(0);
-            Individual knee = paretoFront.get(0);
-            for(Individual ind:paretoFront){
-                if(ind.getFitness(Parameters.Operators.SR_CPP_FITNESS) > acc.getFitness(Parameters.Operators.SR_CPP_FITNESS)){
-                    acc = ind;
-                }
-                if(ind.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS) < comp.getFitness(Parameters.Operators.SUBTREE_COMPLEXITY_FITNESS)){
-                    comp = ind;
-                }
-                if(ind.getEuclideanDistance()<knee.getEuclideanDistance()){
-                    knee = ind;
-                }
-                this.saveText(PARETO_PATH, ind.toScaledString() + "\n", true);
-            }
-            this.saveText(LEAST_COMPLEX_PATH, comp.toScaledString() + "\n", true);
-            this.saveText(MOST_ACCURATE_PATH, acc.toScaledString() + "\n", true);
-            this.saveText(KNEE_PATH, knee.toScaledString() + "\n", true);
-            
         }  
-        // finally, deallocate dataset from shared memory
-        if(firstFitnessFunction.equals(Parameters.Operators.SR_CPP_FITNESS)){
-            DataCpp ed = new DataCpp(PROBLEM, TARGET_NUMBER);
-            ed.deallocateDataset();
-        }
-        
-        // FUSE THE PARETO FRONT WITH ARM
-        //fuseParetoFront();
         return bestOnCrossVal;
-    }
-    
-    public void fuseParetoFront(){
-        int iters = 100;
-        ModelFuserARM mfa = new ModelFuserARM(PROBLEM,TERM_SET.size(),paretoFront,iters,COERCE_TO_INT);
-        double[] weights = mfa.arm_weights();
-        
-        // print final model
-        for(int i=0;i<paretoFront.size();i++){
-            this.saveText(FUSED_PATH, "+ " + weights[i] + " " + paretoFront.get(i).toScaledString() + "\n", true);
-        }
-        
-        System.out.println();
     }
     
     public boolean stopCriteria(){

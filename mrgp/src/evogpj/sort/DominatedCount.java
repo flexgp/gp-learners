@@ -30,7 +30,7 @@ import evogpj.operator.Operator;
 /**
  * A class for performing a non-dominated sort of individuals
  * 
- * @author Dylan Sherry
+ * @author Dylan Sherry and Ignacio Arnaldo
  */
 public class DominatedCount extends Operator {
 

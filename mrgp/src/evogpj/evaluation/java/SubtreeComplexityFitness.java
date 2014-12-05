@@ -40,6 +40,7 @@ public class SubtreeComplexityFitness extends FitnessFunction {
 	/**
 	 * Should this fitness function be minimized (i.e. mean squared error) or
 	 * maximized?
+     * @return 
 	 */
         @Override
 	public Boolean isMaximizingFunction() {
@@ -48,6 +49,7 @@ public class SubtreeComplexityFitness extends FitnessFunction {
 
 	/**
 	 * Compute the subtree complexity of the individual
+     * @param ind
 	 */
 	public void eval(Individual ind) {
 		Tree t = (Tree) ind.getGenotype();

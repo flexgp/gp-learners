@@ -29,7 +29,7 @@ import java.util.LinkedHashMap;
 /**
  * Computes crowding distance of each individual.
  * 
- * @author Dylan Sherry
+ * @author Dylan Sherry and Ignacio Arnaldo
  *
  */
 public class CrowdingSort {
