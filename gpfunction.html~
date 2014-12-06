@@ -164,7 +164,7 @@ $ java -jar gpfunction.jar -train path_to_your_data -minutes 10 -cuda
 <h2>
 <a name="step-4-speeding-up-your-runs-with-c-optimized-execution" class="anchor" 
 href="#step-4-speeding-up-your-runs-with-c-optimized-execution"><span class="octicon 
-octicon-link"></span></a>3) Change the default parameters</h2>
+octicon-link"></span></a>2) Change the default parameters</h2>
 
 <p>To modify the default parameters of the GP Function learner, it is necessary to append the flag 
  <em>-properties</em> followed by the path of the properties file containing the desired parameters:
