@@ -41,7 +41,7 @@ octicon-link"></span></a>GP Function classifier</h1>
 <img src="http://latex.codecogs.com/svg.latex?$\lambda$" border="0"/> is used to build the decision rule
 <img src="http://latex.codecogs.com/svg.latex?$L_i = \left\{ 1, \ \mbox{if}  \ y_i \geq \lambda \atop 0, \ \mbox{if} \ y_i < \lambda \right\}$" border="0"/> 
 that determines whether a given output represents a class 0 or class 1 prediction.</p>
-<center><img src="images/auca.png" alt="auca" height="200px" width="550px"></center>
+<center><img src="images/auca.png" alt="auca" height="200px" width="400px"></center>
  
 <p>It is possible
  to use disjoint sets of data (training and validation sets) for the first and seconds steps. For further
