@@ -32,7 +32,7 @@ In a preprocessing step, a set of conditions in the form of <img src="http://lat
 <center><img src="images/conditions.png" alt="conditions" height="200px" width="250px"></center>
 
 <p>In the second step, a Genetic Programming strategy is adopted to search in the space of boolean rules using the generated conditions as leaves of the GP trees.</p>
-<center><img src="images/rtpopulation.png" alt="rtpopulation" height="200px" width="350px"></center>
+<center><img src="images/rtpopulation.png" alt="rtpopulation" height="250px" width="350px"></center>
 
 <p>Current release provides functionality both for performing Binary Classification on numerical datasets and 
 for testing the retrieved classifiers. In this page we provide a quick tutorial on how to get started with the
